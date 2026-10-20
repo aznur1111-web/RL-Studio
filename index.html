@@ -1,0 +1,2345 @@
+<!doctype html><html lang="en" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="description" content="Az RL Studio, a single-file course from 'what is a reward?' to tabular and deep reinforcement learning from scratch"><title>Az RL Studio</title>
+<script>try{const d=JSON.parse(localStorage.getItem('az-rl-studio')||'null');const t=d&&['light','dark'].includes(d.theme)?d.theme:(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');document.documentElement.dataset.theme=t}catch{}</script>
+<style>
+:root{color-scheme:dark;--bg:#15130f;--panel:#1d1a15;--panel2:#262119;--panel3:#191712;--panel4:#221d15;--line:#332c21;--line2:#4b4130;--text:#f0eae0;--muted:#b3a894;--subtle:#8d8371;--accent:#e8a020;--accent2:#f5bd4a;--strong:#f7cd72;--onaccent:#231a06;--good:#5fcf95;--warn:#e0b04f;--bad:#ff8b93;--shadow:none;--radius:12px}
+:root[data-theme=light]{color-scheme:light;--bg:#f5f2ec;--panel:#fffdf8;--panel2:#f0ebe1;--panel3:#faf7f1;--panel4:#ece5d8;--line:#e2dbcc;--line2:#cec5b2;--text:#2a2620;--muted:#655c4e;--subtle:#8b8171;--accent:#a35a06;--accent2:#c97a12;--strong:#7a3f00;--onaccent:#fffdf8;--good:#136c3a;--warn:#8a5a04;--bad:#a81f2d;--shadow:0 8px 24px rgba(60,48,30,.05)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--accent);outline-offset:2px}a{color:var(--accent);text-decoration:none}.muted{color:var(--muted)}.mono,code,pre,textarea{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.topbar{height:60px;position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text)}.brand-mark{width:32px;height:32px;border:1px solid var(--line2);border-radius:9px;background:var(--panel2);display:grid;place-items:center;color:var(--strong);font-weight:850;font-size:14px}.brand strong{display:block;font-size:13px;line-height:1.2}.brand small{display:block;font-size:9.5px;letter-spacing:.14em;color:var(--muted);margin-top:2px}
+.top-meta{flex:1;color:var(--subtle);font-size:12px}.top-actions{display:flex;align-items:center;gap:7px}.top-actions label{font-size:11px;color:var(--muted)}
+select,.btn{border:1px solid var(--line2);background:var(--panel3);color:var(--text);border-radius:8px;padding:7px 11px;font-size:12px}.btn{font-weight:600;white-space:nowrap}.btn:hover{border-color:var(--accent);color:var(--strong)}.btn.primary{background:var(--accent);color:var(--onaccent);border-color:var(--accent)}.btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.tabs{display:flex;gap:2px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--line);position:sticky;top:60px;z-index:19;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:2px solid transparent;padding:9px 12px;font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+.tab:hover{color:var(--text)}.tab[aria-selected=true]{color:var(--strong);border-bottom-color:var(--accent)}
+.layout{display:grid;grid-template-columns:248px minmax(400px,1fr);max-width:1440px;margin:auto;min-height:calc(100vh - 96px)}
+.sidebar{position:sticky;top:96px;height:calc(100vh - 96px);overflow:auto;border-right:1px solid var(--line);padding:18px 12px;display:flex;flex-direction:column}
+.side-title{display:flex;justify-content:space-between;color:var(--subtle);font-size:10px;letter-spacing:.14em;font-weight:800;padding:0 4px 10px;text-transform:uppercase}
+.pill,.tag{border:1px solid var(--line2);border-radius:6px;padding:3px 7px;font-size:10px;color:var(--muted);white-space:nowrap}
+.search{display:flex;gap:7px;align-items:center;border:1px solid var(--line);border-radius:9px;background:var(--panel3);height:37px;padding:0 10px;margin-bottom:10px}
+.search input{min-width:0;width:100%;background:transparent;border:0;outline:0;color:var(--text);font-size:12px}
+.filter{display:block;color:var(--subtle);font-size:11px;margin-bottom:12px}.filter select{display:block;width:100%;max-width:none;margin-top:5px;padding:7px}
+.tree{display:flex;flex-direction:column;gap:8px}
+.group-label{display:flex;justify-content:space-between;color:var(--subtle);font-size:10px;font-weight:800;letter-spacing:.08em;padding:4px 5px}
+.link{width:100%;text-align:left;display:flex;gap:8px;align-items:center;background:transparent;border:1px solid transparent;color:var(--muted);padding:6px 8px;border-radius:8px;min-height:32px;font-size:12px}
+.link .num{font:10px ui-monospace,monospace;color:var(--subtle);width:20px;flex:none}
+.link .name{font-size:12px;flex:1}.link .done{color:var(--good)}
+.link:hover{background:var(--panel2);color:var(--text)}.link.active{background:var(--panel2);border-color:var(--line2);color:var(--strong)}
+.side-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+.progress-row{display:flex;justify-content:space-between;color:var(--subtle);font-size:11px;margin-bottom:6px}
+.progress{height:5px;background:var(--panel2);border-radius:9px;overflow:hidden}.progress>div{height:100%;width:0;background:var(--accent);transition:width .25s}
+.side-actions{display:flex;gap:6px;margin-top:11px}.side-actions .btn{flex:1;padding:6px;font-size:11px}
+main{max-width:920px;width:100%;min-width:0;margin:auto;padding:24px 26px 40px}
+.breadcrumb{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--subtle);margin-bottom:14px}
+.header{padding:2px 2px 20px;border-bottom:1px solid var(--line);margin-bottom:18px}
+.eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:.13em;font-weight:800;color:var(--accent);margin-bottom:8px}
+.header h1{font-size:clamp(25px,2.8vw,34px);line-height:1.13;letter-spacing:-.035em;margin:0 0 10px;font-weight:700}
+.header p{font-size:14.5px;color:var(--muted);margin:0 0 12px;max-width:740px}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag.good{color:var(--good)}.tag.warn{color:var(--warn)}
+.header-actions{display:flex;gap:7px;margin-top:14px;flex-wrap:wrap}
+.panel{border:1px solid var(--line);background:var(--panel);border-radius:var(--radius);overflow:hidden;margin-bottom:14px;box-shadow:var(--shadow)}
+.panel-head{padding:16px 18px 0}.panel-head h2{font-size:14.5px;margin:0 0 4px;letter-spacing:-.01em;font-weight:650}.panel-head p{font-size:12.5px;color:var(--muted);margin:0}
+.body{padding:14px 18px 18px}
+.idea{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:18px}
+.idea p{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.65}
+.mental{background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:12px}
+.mental small{color:var(--subtle);font-size:10px;letter-spacing:.11em;text-transform:uppercase}
+.mental strong{display:block;margin:6px 0;font-size:13px;color:var(--strong)}
+.mental p{font-size:12px;color:var(--muted);margin:0}
+.takeaway{padding:11px 13px;border:1px solid var(--line2);background:var(--panel3);border-radius:8px;color:var(--strong);font-size:12.5px;line-height:1.6}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mini{background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:13px}
+.mini h3{font-size:12px;margin:0 0 6px;font-weight:650}
+.mini p{font-size:12.5px;color:var(--muted);margin:0;line-height:1.6}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px}
+.steps li{counter-increment:s;display:flex;gap:10px;color:var(--muted);font-size:12.5px;line-height:1.55}
+.steps li:before{content:counter(s);width:23px;height:23px;flex:none;display:grid;place-items:center;border:1px solid var(--line2);background:var(--panel3);border-radius:6px;color:var(--accent);font:11px ui-monospace,monospace}
+.pseudo{white-space:pre-wrap;overflow:auto;background:var(--panel3);border:1px solid var(--line);border-radius:10px;padding:13px;font:12px/1.7 ui-monospace,monospace;color:var(--strong);margin:0}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{border-bottom:1px solid var(--line);text-align:left;padding:8px 10px;vertical-align:top}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle);font-weight:700;background:var(--panel3)}
+td{color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tile{padding:12px;background:var(--panel3);border:1px solid var(--line);border-radius:9px}
+.tile span{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--subtle)}
+.tile strong{display:block;color:var(--strong);font:700 13px ui-monospace,monospace;margin-top:6px}
+.tile small{font-size:10.5px;color:var(--muted);display:block;margin-top:2px}
+.notice{padding:12px 13px;background:var(--panel3);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:9px;font-size:12.5px;color:var(--muted);line-height:1.65}
+.notice strong{color:var(--warn)}
+.notice.danger{border-left-color:var(--bad)}.notice.danger strong{color:var(--bad)}
+.notice.good{border-left-color:var(--good)}.notice.good strong{color:var(--good)}
+.lab-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.lab-top label{font-size:11.5px;color:var(--muted)}
+.lab-input{width:100%;min-height:60px;resize:vertical;background:var(--panel3);border:1px solid var(--line2);border-radius:9px;padding:10px;color:var(--text);font:12px/1.6 ui-monospace,monospace;margin:10px 0}
+.lab-output{padding:12px;background:var(--panel3);border:1px solid var(--line);border-radius:9px;min-height:60px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--strong);font:12px/1.7 ui-monospace,monospace}
+.lab-output canvas{width:100%;height:auto;display:block;background:var(--bg);border-radius:7px}
+.lab-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.label{font-size:10px;color:var(--subtle);font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px}
+.code-head{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:11px 13px;background:var(--panel3);border-bottom:1px solid var(--line)}
+.code-editor{display:block;width:100%;min-height:220px;resize:vertical;border:0;border-radius:0;background:var(--panel3);color:var(--text);padding:14px;font:12px/1.7 ui-monospace,monospace;outline:0}
+.code-foot{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 13px;color:var(--subtle);font-size:10px;border-top:1px solid var(--line)}
+.practice{border:1px solid var(--line);background:var(--panel3);border-radius:9px;padding:13px}
+.practice summary{cursor:pointer;font-size:12.5px;font-weight:600}
+.practice p{font-size:12.5px;color:var(--muted);margin:10px 0 0;line-height:1.65}
+.references{display:flex;flex-direction:column;gap:8px}
+.references a{font-size:12.5px;overflow-wrap:anywhere}
+.home-hero{padding:28px;background:linear-gradient(150deg,var(--panel),var(--panel3));border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
+.home-hero h1{font-size:clamp(28px,3.4vw,40px);line-height:1.1;letter-spacing:-.04em;margin:8px 0 14px;font-weight:700}
+.home-hero p{color:var(--muted);font-size:14px;max-width:740px;margin:0 0 16px;line-height:1.65}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px}
+.stat strong{display:block;font:700 22px ui-monospace,monospace;color:var(--strong)}
+.stat span{display:block;font-size:10.5px;color:var(--muted);margin-top:3px}
+.chapter-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.chapter-card{padding:14px;text-align:left;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text)}
+.chapter-card:hover{border-color:var(--accent)}
+.chapter-card .num{font-size:10px;color:var(--accent);letter-spacing:.09em;font-weight:800}
+.chapter-card strong{display:block;font-size:13px;margin:5px 0;font-weight:650}
+.chapter-card p{font-size:11.5px;color:var(--muted);margin:0;line-height:1.55}
+.toast{position:fixed;z-index:99;bottom:20px;left:50%;transform:translate(-50%,10px);opacity:0;pointer-events:none;background:var(--panel);border:1px solid var(--line2);border-radius:9px;padding:11px 15px;box-shadow:var(--shadow);font-size:12px;transition:opacity .14s,transform .14s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.footer{font-size:10.5px;color:var(--subtle);display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 2px 14px;align-items:center;border-top:1px solid var(--line);margin-top:20px}
+.bar-chart{display:flex;gap:3px;align-items:flex-end;height:60px;margin:6px 0}
+.bar-chart div{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:2px;opacity:.8}
+.bar-label{font-size:9.5px;color:var(--subtle);font-family:ui-monospace,monospace}
+
+/* Beginner layer */
+.plain-guide{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(210px,.8fr);gap:14px;margin-bottom:15px}
+.plain-label{font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--accent);margin-bottom:7px}
+.plain-copy{font-size:14px;line-height:1.8;margin:0;color:var(--text)}
+.plain-example{margin-top:12px;padding:12px 13px;border:1px solid var(--line);background:var(--panel3);border-radius:9px}
+.plain-example strong{display:block;font-size:11px;letter-spacing:.04em;margin-bottom:5px;color:var(--strong)}
+.plain-example p{font-size:12.5px;line-height:1.7;color:var(--muted);margin:0}
+.words-block{margin:3px 0 16px}
+.words-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.word-card{padding:10px 11px;border:1px solid var(--line);background:var(--panel3);border-radius:8px;min-width:0}
+.word-card strong{display:block;font-size:11px;color:var(--strong);margin-bottom:4px}
+.word-card p{font-size:11.5px;color:var(--muted);line-height:1.6;margin:0}
+.tech-detail{border-top:1px solid var(--line);padding-top:14px}
+.tech-detail p{font-size:12.5px;color:var(--muted);line-height:1.7;margin:0 0 10px}
+
+/* Gridworld lab */
+.gw-wrap{display:grid;grid-template-columns:minmax(320px,1fr) 320px;gap:14px}
+@media(max-width:900px){.gw-wrap{grid-template-columns:1fr}}
+.gw-canvas-wrap{background:var(--panel3);border:1px solid var(--line);border-radius:9px;padding:10px;display:flex;flex-direction:column;gap:8px;align-items:center}
+.gw-canvas-wrap canvas{width:100%;max-width:520px;height:auto;background:var(--bg);border-radius:7px}
+.gw-controls{display:flex;flex-direction:column;gap:9px}
+.gw-row{display:grid;grid-template-columns:86px 1fr;align-items:center;gap:8px}
+.gw-row label{font-size:11px;color:var(--muted)}
+.gw-row .val{font:11px ui-monospace,monospace;color:var(--strong)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:6px}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;border:1px solid var(--line2)}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.stat-tile{background:var(--panel3);border:1px solid var(--line);border-radius:8px;padding:8px}
+.stat-tile strong{display:block;font:700 13px ui-monospace,monospace;color:var(--strong)}
+.stat-tile span{display:block;font-size:9.5px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.07em}
+
+@media(max-width:1080px){.layout{grid-template-columns:220px minmax(360px,1fr)}main{padding:22px 20px 36px}}
+@media(max-width:840px){.topbar{height:auto;min-height:56px;flex-wrap:wrap;gap:10px;padding:10px 14px}.top-meta{display:none}.top-actions{margin-left:auto}.top-actions label{display:none}.tabs{top:0;position:static}.layout{display:block}.sidebar{position:static;height:auto;max-height:none;border:0;border-bottom:1px solid var(--line);padding:14px}.tree{max-height:260px;overflow:auto}.side-foot{display:none}main{padding:18px 15px 32px}.idea{grid-template-columns:1fr}.mental{order:-1}.stats{grid-template-columns:1fr 1fr}.chapter-cards,.two,.lab-cols,.plain-guide,.gw-wrap{grid-template-columns:1fr}.words-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.brand small{display:none}.brand-mark{width:30px;height:30px}.brand strong{font-size:12px}.top-actions select{max-width:92px;padding:6px;font-size:10px}.top-actions .btn{padding:6px 8px;font-size:10px}.chapter-cards,.tiles,.words-grid{grid-template-columns:1fr}.home-hero{padding:20px}.home-hero h1{font-size:27px}.header h1{font-size:25px}.body,.panel-head{padding-left:15px;padding-right:15px}.footer{display:block}.footer span{display:block;margin-bottom:6px}.plain-copy{font-size:13.5px}.stat-row{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+@media print{.topbar,.sidebar,.tabs,.header-actions,.lab-top,.btn,.toast{display:none!important}.layout{display:block}main{padding:0;max-width:none}.panel,.home-hero{break-inside:avoid;box-shadow:none}body{background:#fff;color:#111}}
+</style></head><body>
+
+<header class="topbar">
+  <a class="brand" href="#home" id="homeLink"><span class="brand-mark">Az</span><span><strong>Az RL Studio</strong><small>FROM REWARD TO BACKPROP</small></span></a>
+  <div class="top-meta" id="catalogCount"></div>
+  <div class="top-actions">
+    <label for="themeSelect">Theme</label>
+    <select id="themeSelect" aria-label="Theme"><option value="system">System</option><option value="light">Light</option><option value="dark">Dark</option></select>
+    <button class="btn" id="printBtn">Print / PDF</button>
+    <button class="btn" id="exportBtn">Export</button>
+    <button class="btn" id="importBtn">Import</button>
+    <input type="file" id="importFile" accept="application/json,.json" hidden>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Main views">
+  <button class="tab" role="tab" data-tab="lesson" aria-selected="true">Lesson</button>
+  <button class="tab" role="tab" data-tab="gridworld" aria-selected="false">Gridworld Lab</button>
+  <button class="tab" role="tab" data-tab="deeplab" aria-selected="false">Deep Lab</button>
+  <button class="tab" role="tab" data-tab="cheatsheet" aria-selected="false">Cheat sheet</button>
+</nav>
+
+<div class="layout">
+  <aside class="sidebar" aria-label="Course navigation">
+    <div class="side-title"><span>COURSE CATALOG</span><span class="pill" id="lessonCount">0</span></div>
+    <div class="search"><span>⌕</span><input id="searchInput" type="search" placeholder="Search RL topics…" aria-label="Search lessons"><kbd>/</kbd></div>
+    <label class="filter">Chapter<select id="chapterFilter"><option value="all">All chapters</option></select></label>
+    <nav class="tree" id="courseTree" aria-label="Lessons"></nav>
+    <div class="side-foot">
+      <div class="progress-row"><span>COURSE PROGRESS</span><strong id="progressText">0 / 0</strong></div>
+      <div class="progress" id="progressBar"><div id="progressFill"></div></div>
+      <div class="side-actions"><button class="btn" data-page="home">Home</button><button class="btn" data-page="progress">Progress</button></div>
+    </div>
+  </aside>
+  <main id="mainView" tabindex="-1" aria-live="polite"></main>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   AZNUR RL STUDIO — single file.
+   Tabular RL from scratch. Gridworld. Deep Lab preview. All computation local.
+   ========================================================================== */
+
+const CHAPTERS=[
+ {id:"foundations",title:"1. Foundations",desc:"The MDP, returns and discounting, value functions, Bellman equations.",ids:["mdp","returns","values","bellman"]},
+ {id:"dp",title:"2. Dynamic programming",desc:"Policy evaluation, policy iteration, value iteration, and GPI.",ids:["dp"]},
+ {id:"model-free",title:"3. Model-free control",desc:"Monte Carlo, TD(0), SARSA, Q-learning, and exploration.",ids:["mctd","sarsa-q","explore"]},
+ {id:"deep",title:"4. Deep RL",desc:"Function approximation, DQN, policy gradients, and the capstone.",ids:["fa","pg","capstone"]}
+];
+
+/* ------------------------------ utilities --------------------------------- */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),1900)}
+function fmt(x,p=4){return Number.isFinite(x)?x.toFixed(p):String(x)}
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+/* ============================================================================
+   GRIDWORLD ENGINE
+   A small tabular MDP. States are cells. Actions are up/right/down/left.
+   Rewards: step = -stepReward, goal = +goalReward, cliff = -cliffReward and reset.
+   ========================================================================== */
+const GridWorld = (function(){
+ const ROWS=5, COLS=5;
+ const ACTIONS=[0,1,2,3]; // 0=up, 1=right, 2=down, 3=left
+ const DR=[-1,0,1,0], DC=[0,1,0,-1];
+ const ARROW=['↑','→','↓','←'];
+
+ function make(opts){
+  opts=opts||{};
+  const gw={
+   rows:ROWS,cols:COLS,
+   walls:new Set(),
+   cliff:new Set(),
+   goal:{r:ROWS-1,c:COLS-1},
+   start:{r:0,c:0},
+   stepReward:opts.stepReward!==undefined?opts.stepReward:1,
+   goalReward:opts.goalReward!==undefined?opts.goalReward:10,
+   cliffReward:opts.cliffReward!==undefined?opts.cliffReward:100,
+   slip:opts.slip!==undefined?opts.slip:0,
+   gamma:opts.gamma!==undefined?opts.gamma:0.95,
+  };
+  return gw;
+ }
+
+ function idx(gw,r,c){return r*gw.cols+c}
+ function inBounds(gw,r,c){return r>=0&&r<gw.rows&&c>=0&&c<gw.cols}
+ function isWall(gw,r,c){return gw.walls.has(r+','+c)}
+ function isCliff(gw,r,c){return gw.cliff.has(r+','+c)}
+ function isGoal(gw,r,c){return gw.goal.r===r&&gw.goal.c===c}
+ function isTerminal(gw,r,c){return isGoal(gw,r,c)}
+
+ /** Deterministic or slippery transition. Returns {r,c,reward,terminal}. */
+ function step(gw,r,c,a,rng){
+  let dr=DR[a], dc=DC[a];
+  if(gw.slip>0&&rng){
+   if(rng()<gw.slip){
+    // perpendicular slip
+    const perp=(rng()<0.5)?1:3;
+    dr=DR[perp]; dc=DC[perp];
+   }
+  }
+  let nr=r+dr, nc=c+dc;
+  if(!inBounds(gw,nr,nc)||isWall(gw,nr,nc)){nr=r;nc=c}
+  if(isCliff(gw,nr,nc)){
+   return {r:gw.start.r, c:gw.start.c, reward:-gw.cliffReward, terminal:false, fell:true};
+  }
+  if(isGoal(gw,nr,nc)){
+   return {r:nr, c:nc, reward:gw.goalReward, terminal:true};
+  }
+  return {r:nr, c:nc, reward:-gw.stepReward, terminal:false};
+ }
+
+ /** Enumerate all non-wall, non-terminal states. */
+ function states(gw){
+  const out=[];
+  for(let r=0;r<gw.rows;r++)for(let c=0;c<gw.cols;c++){
+   if(isWall(gw,r,c))continue;
+   out.push([r,c]);
+  }
+  return out;
+ }
+
+ /** Policy evaluation: V(s) <- sum_a pi(a|s) [r + gamma V(s')]. */
+ function policyEvaluation(gw,policy,opts){
+  opts=opts||{};
+  const theta=opts.theta||1e-8, maxIter=opts.maxIter||10000;
+  const V=new Float64Array(gw.rows*gw.cols);
+  const rng=opts.rng;
+  let iters=0;
+  for(let it=0;it<maxIter;it++){
+   let delta=0;
+   iters=it+1;
+   for(const [r,c] of states(gw)){
+    if(isTerminal(gw,r,c)){V[idx(gw,r,c)]=0;continue}
+    let v=0;
+    const pi=policy[r*gw.cols+c]||[0.25,0.25,0.25,0.25];
+    // For deterministic transitions this is a simple sum.
+    // For slippered transitions we compute the expected value across
+    // the effective action distribution (pi mixed with slip).
+    for(const a of ACTIONS){
+     const p=pi[a];
+     if(p===0)continue;
+     const possible=possibleTransitions(gw,r,c,a);
+     for(const t of possible){
+      v+=p*t.prob*(t.reward+gw.gamma*V[idx(gw,t.r,t.c)]);
+     }
+    }
+    delta=Math.max(delta,Math.abs(v-V[idx(gw,r,c)]));
+    V[idx(gw,r,c)]=v;
+   }
+   if(delta<theta)break;
+  }
+  return {V,iters};
+ }
+
+ /** Enumerate possible next (r,c,reward,prob) for a state-action under the slip model. */
+ function possibleTransitions(gw,r,c,a){
+  const out=[];
+  if(gw.slip<=0){
+   const dr=DR[a], dc=DC[a];
+   let nr=r+dr, nc=c+dc;
+   if(!inBounds(gw,nr,nc)||isWall(gw,nr,nc)){nr=r;nc=c}
+   if(isCliff(gw,nr,nc)){
+    out.push({r:gw.start.r,c:gw.start.c,reward:-gw.cliffReward,prob:1});
+   } else if(isGoal(gw,nr,nc)){
+    out.push({r:nr,c:nc,reward:gw.goalReward,prob:1});
+   } else {
+    out.push({r:nr,c:nc,reward:-gw.stepReward,prob:1});
+   }
+   return out;
+  }
+  // slip: main with prob 1-slip, each perpendicular with slip/2
+  const main={a, p:1-gw.slip};
+  const perps=[(a+1)%4, (a+3)%4];
+  const list=[main, {a:perps[0], p:gw.slip/2}, {a:perps[1], p:gw.slip/2}];
+  for(const t of list){
+   const dr=DR[t.a], dc=DC[t.a];
+   let nr=r+dr, nc=c+dc;
+   if(!inBounds(gw,nr,nc)||isWall(gw,nr,nc)){nr=r;nc=c}
+   if(isCliff(gw,nr,nc)){
+    out.push({r:gw.start.r,c:gw.start.c,reward:-gw.cliffReward,prob:t.p});
+   } else if(isGoal(gw,nr,nc)){
+    out.push({r:nr,c:nc,reward:gw.goalReward,prob:t.p});
+   } else {
+    out.push({r:nr,c:nc,reward:-gw.stepReward,prob:t.p});
+   }
+  }
+  return out;
+ }
+
+ /** One sweep of policy improvement. Returns a new deterministic greedy policy. */
+ function policyImprovement(gw,V){
+  const policy={};
+  for(const [r,c] of states(gw)){
+   if(isTerminal(gw,r,c)){policy[r*gw.cols+c]=[0,0,0,0];continue}
+   const q=[0,0,0,0];
+   for(const a of ACTIONS){
+    const possible=possibleTransitions(gw,r,c,a);
+    let qa=0;
+    for(const t of possible)qa+=t.prob*(t.reward+gw.gamma*V[idx(gw,t.r,t.c)]);
+    q[a]=qa;
+   }
+   // greedy argmax with random tie-break
+   let best=-Infinity, bestActions=[];
+   for(const a of ACTIONS){if(q[a]>best+1e-12){best=q[a];bestActions=[a]}else if(Math.abs(q[a]-best)<1e-12)bestActions.push(a)}
+   const choice=bestActions[Math.floor(bestActions.length/2)];
+   const p=[0,0,0,0];p[choice]=1;
+   policy[r*gw.cols+c]=p;
+  }
+  return policy;
+ }
+
+ /** Policy iteration: evaluate, improve, repeat. */
+ function policyIteration(gw,opts){
+  opts=opts||{};
+  const maxOuter=opts.maxOuter||100;
+  const theta=opts.theta||1e-8;
+  // start with uniform random policy
+  let policy={};
+  for(const [r,c] of states(gw)){
+   if(isTerminal(gw,r,c)){policy[r*gw.cols+c]=[0,0,0,0];continue}
+   policy[r*gw.cols+c]=[0.25,0.25,0.25,0.25];
+  }
+  let V=null, outer=0, evalIters=0;
+  for(let o=0;o<maxOuter;o++){
+   outer=o+1;
+   const ev=policyEvaluation(gw,policy,{theta});
+   V=ev.V;
+   evalIters=ev.iters;
+   const newPolicy=policyImprovement(gw,V);
+   let stable=true;
+   for(const key in newPolicy){
+    const a=newPolicy[key], b=policy[key];
+    for(let i=0;i<4;i++)if(Math.abs(a[i]-b[i])>1e-9){stable=false;break}
+    if(!stable)break;
+   }
+   policy=newPolicy;
+   if(stable)break;
+  }
+  return {V,policy,outer,evalIters};
+ }
+
+ /** Value iteration: V(s) <- max_a sum p [r + gamma V(s')]. */
+ function valueIteration(gw,opts){
+  opts=opts||{};
+  const theta=opts.theta||1e-8, maxIter=opts.maxIter||10000;
+  const V=new Float64Array(gw.rows*gw.cols);
+  let iters=0;
+  for(let it=0;it<maxIter;it++){
+   let delta=0;
+   iters=it+1;
+   for(const [r,c] of states(gw)){
+    if(isTerminal(gw,r,c)){V[idx(gw,r,c)]=0;continue}
+    let best=-Infinity;
+    for(const a of ACTIONS){
+     const possible=possibleTransitions(gw,r,c,a);
+     let q=0;
+     for(const t of possible)q+=t.prob*(t.reward+gw.gamma*V[idx(gw,t.r,t.c)]);
+     if(q>best)best=q;
+    }
+    delta=Math.max(delta,Math.abs(best-V[idx(gw,r,c)]));
+    V[idx(gw,r,c)]=best;
+   }
+   if(delta<theta)break;
+  }
+  const policy=policyImprovement(gw,V);
+  return {V,policy,iters};
+ }
+
+ /** Q-table helpers. */
+ function emptyQ(gw){
+  const Q={};
+  for(let r=0;r<gw.rows;r++)for(let c=0;c<gw.cols;c++){
+   if(isWall(gw,r,c))continue;
+   Q[r*gw.cols+c]=new Float64Array(4);
+  }
+  return Q;
+ }
+ function randomState(gw,rng){
+  for(let i=0;i<500;i++){
+   const r=Math.floor(rng()*gw.rows), c=Math.floor(rng()*gw.cols);
+   if(!isWall(gw,r,c)&&!isTerminal(gw,r,c))return {r,c};
+  }
+  return {r:gw.start.r,c:gw.start.c};
+ }
+ function greedy(Q,gw,r,c){
+  const q=Q[r*gw.cols+c];
+  let best=-Infinity, bestActions=[];
+  for(const a of ACTIONS){if(q[a]>best+1e-12){best=q[a];bestActions=[a]}else if(Math.abs(q[a]-best)<1e-12)bestActions.push(a)}
+  return bestActions[0];
+ }
+ function epsGreedy(Q,gw,r,c,epsilon,rng){
+  if(rng()<epsilon)return Math.floor(rng()*4);
+  return greedy(Q,gw,r,c);
+ }
+
+ /** Run one episode of Q-learning or SARSA. Returns {reward, steps, qChanged}. */
+ function runEpisode(gw,Q,algo,opts){
+  const rng=opts.rng;
+  const epsilon=opts.epsilon, alpha=opts.alpha;
+  const maxSteps=opts.maxSteps||200;
+  let s=randomState(gw,rng);
+  let a=epsGreedy(Q,gw,s.r,s.c,epsilon,rng);
+  let totalReward=0, steps=0, qChanged=0;
+  for(let t=0;t<maxSteps;t++){
+   const tr=step(gw,s.r,s.c,a,rng);
+   totalReward+=tr.reward;
+   steps++;
+   const sIdx=s.r*gw.cols+s.c;
+   if(algo==='qlearning'){
+    let maxNext=0;
+    if(!tr.terminal){
+     const qn=Q[tr.r*gw.cols+tr.c];
+     maxNext=Math.max(qn[0],qn[1],qn[2],qn[3]);
+    }
+    const target=tr.reward+gw.gamma*(tr.terminal?0:maxNext);
+    const td=target-Q[sIdx][a];
+    Q[sIdx][a]+=alpha*td;
+    qChanged+=Math.abs(td);
+    s={r:tr.r,c:tr.c};
+    if(tr.terminal)break;
+    a=epsGreedy(Q,gw,s.r,s.c,epsilon,rng);
+   } else { // SARSA
+    let nextQ=0;
+    let nextA=0;
+    if(!tr.terminal){
+     nextA=epsGreedy(Q,gw,tr.r,tr.c,epsilon,rng);
+     nextQ=Q[tr.r*gw.cols+tr.c][nextA];
+    }
+    const target=tr.reward+gw.gamma*(tr.terminal?0:nextQ);
+    const td=target-Q[sIdx][a];
+    Q[sIdx][a]+=alpha*td;
+    qChanged+=Math.abs(td);
+    s={r:tr.r,c:tr.c};
+    if(tr.terminal)break;
+    a=nextA;
+   }
+  }
+  return {reward:totalReward, steps, qChanged};
+ }
+
+ /** Greedy evaluation: how much reward does the greedy policy collect? */
+ function greedyEval(gw,Q,maxSteps){
+  maxSteps=maxSteps||200;
+  let s={r:gw.start.r,c:gw.start.c};
+  let total=0, steps=0;
+  for(let t=0;t<maxSteps;t++){
+   if(isTerminal(gw,s.r,s.c))break;
+   const a=greedy(Q,gw,s.r,s.c);
+   const tr=step(gw,s.r,s.c,a,null); // deterministic, no slip
+   total+=tr.reward;
+   steps++;
+   s={r:tr.r,c:tr.c};
+   if(tr.terminal)break;
+  }
+  return {reward:total, steps};
+ }
+
+ return {ROWS,COLS,ACTIONS,ARROW,make,idx,inBounds,isWall,isCliff,isGoal,isTerminal,step,states,policyEvaluation,policyImprovement,policyIteration,valueIteration,emptyQ,randomState,epsGreedy,greedy,runEpisode,greedyEval,possibleTransitions};
+})();
+
+/* ============================================================================
+   LESSON DATA
+   ========================================================================== */
+const D={
+ kind:"Concept",status:"Concept lesson",level:2,demo:"none",inputKind:"text",refs:[],codeKey:"generic",
+ summary:"",
+ mental:"",mentalText:"",
+ problem:"",steps:[],pseudo:"",invariant:"",uses:"",strength:"",limits:"",pitfall:"",
+ question:"",answer:"",demo:"none",sample:"",inputKind:"text",refs:[]
+};
+function mk(o){
+ const steps=o.steps||["Look at the input.","Apply the rule.","Produce the output.","Check it."];
+ return Object.assign({},D,{
+  summary:o.summary||"",
+  mental:o.mental||o.title,
+  mentalText:o.mentalText||o.summary||"",
+  problem:o.problem||("What does "+o.title+" mean and why does it matter?"),
+  steps:steps,
+  trace:o.trace||steps.map((s,i)=>["Step "+(i+1),s,i===steps.length-1?"Result verified":"Step done"]),
+  answer:o.answer||o.summary||"",
+  level:o.level||2
+ },o);
+}
+
+const RAW=[
+/* ---------- Chapter 1: Foundations ---------- */
+{id:"mdp",title:"The Markov Decision Process",level:1,kind:"Foundation",status:"Runnable teaching lab",
+ summary:"A Markov Decision Process is the mathematical container for everything in RL. It has five parts: states, actions, transition probabilities, rewards, and a discount factor. A policy says what to do in each state.",
+ mental:"A board game with dice and payouts",
+ mentalText:"You are on a board. At each square you choose a move. The dice might push you somewhere else. Some squares give points. You want to collect the most points over many turns.",
+ steps:["States S: every situation the agent can be in.","Actions A: every choice the agent can make.","Transitions p(s', r | s, a): the rules of the environment.","Rewards r: the number the environment pays out.","Discount γ: how much future rewards matter.","Policy π(a | s): the agent's rule for choosing actions."],
+ pseudo:"MDP = (S, A, p, R, γ)\n\n  S: set of states\n  A: set of actions\n  p(s', r | s, a): probability of next state s' and reward r\n  R: reward function (often folded into p)\n  γ ∈ [0, 1): discount factor\n\nA policy π(a | s) says how likely each action is\nin each state. Deterministic policies put all the\nprobability on one action.\n\nAn episode is one run:\n  S_0, A_0, R_1, S_1, A_1, R_2, ... until terminal",
+ invariant:"The Markov property: the next state and reward depend only on the current state and the action, not on the whole history before that.",
+ uses:"Every RL problem you will ever solve is an MDP or an approximation of one. Games, robotics, recommendation, chip design.",
+ strength:"A precise language for sequential decision problems.",
+ limits:"Real problems are usually partially observed, continuous, and non-stationary. The MDP is a simplification.",
+ pitfall:"Confusing the state with the observation. In a fully observed MDP they are the same. In a POMDP they are not, and treating them as the same breaks the algorithm.",
+ question:"In a gridworld with 5 rows and 5 columns, one wall and one goal, how many states are there?",
+ answer:"23 states: 25 cells minus one wall minus one goal, and the goal is a terminal absorbing state that we still count. Precisely: 25 cells - 1 wall = 24 non-wall cells. Of those, the goal is terminal. All 24 cells are enumerated as states, and the goal has value 0.",
+ demo:"mdp",sample:"",inputKind:"text",
+ refs:[["Sutton & Barto, Reinforcement Learning: An Introduction (2nd ed), Ch. 3","http://incompleteideas.net/book/the-book-2nd.html"]]},
+
+{id:"returns",title:"Returns and discounting",level:1,kind:"Foundation",status:"Runnable teaching lab",
+ summary:"The return is the total reward the agent collects from a point in time onward, with each future reward discounted by γ. The discount factor says how patient the agent is.",
+ mental:"A piggy bank that loses value the longer you wait",
+ mentalText:"A dollar today is worth more than a dollar next year. The discount factor γ is how much less. γ = 0.9 means next year is worth 90 cents, the year after 81 cents, and so on.",
+ steps:["Define the return as the sum of discounted rewards.","Notice the recursive form: G_t = R_{t+1} + γ G_{t+1}.","Show that γ<1 keeps the sum finite for bounded rewards.","Distinguish episodic (γ=1 allowed) from continuing (γ<1 required)."],
+ pseudo:"Return definition:\n  G_t = R_{t+1} + γ R_{t+2} + γ² R_{t+3} + ...\n      = Σ_{k=0}^∞ γ^k R_{t+k+1}\n\nRecursive form:\n  G_t = R_{t+1} + γ G_{t+1}\n\nBounded rewards: if |R| ≤ R_max then\n  |G_t| ≤ R_max / (1 - γ)\nwhich is finite whenever γ < 1.\n\nEpisodic tasks terminate and can use γ=1.\nContinuing tasks need γ<1 to keep the sum bounded.",
+ invariant:"For γ<1 and bounded rewards, the return is always finite. For γ=1 in a continuing task, the sum can diverge.",
+ uses:"Every objective in RL. Discounting is what turns a stream of rewards into a single number that the agent can maximize.",
+ strength:"Simple and mathematically clean. The recursive form is the seed of the Bellman equation.",
+ limits:"γ close to 1 makes the agent far-sighted and slow to learn. γ close to 0 makes it greedy and short-sighted.",
+ pitfall:"Setting γ=1 for a continuing task makes the value function infinite or undefined. Use γ=1 only when the task is guaranteed to terminate.",
+ question:"If γ=0.9 and the reward is 10 at every step forever, what is the return from now?",
+ answer:"10 / (1 − 0.9) = 100. The geometric series 10 + 9 + 8.1 + ... sums to 10 · 1/(1−0.9) = 100.",
+ demo:"returns",sample:"",inputKind:"text"},
+
+{id:"values",title:"Value functions",level:2,kind:"Foundation",status:"Runnable teaching lab",
+ summary:"A value function says how much reward the agent expects to collect from a state under a policy. A Q-value says the same for a state-action pair. The two are related by averaging the Q-values over the policy.",
+ mental:"A weather forecast for the future of a game",
+ mentalText:"The value of a state is the expected total score from that state onward. The Q-value narrows it: from this state, if I take this action and then follow the policy, how much do I expect to score?",
+ steps:["Define V^π(s) as the expected return starting from s and following π.","Define Q^π(s, a) as the expected return starting from s, taking action a, then following π.","Relate them: V^π(s) = Σ_a π(a|s) Q^π(s, a).","Also relate them backward: Q^π(s, a) = Σ_{s', r} p(s', r | s, a) [r + γ V^π(s')]."],
+ pseudo:"V^π(s) = E_π[ G_t | S_t = s ]\nQ^π(s, a) = E_π[ G_t | S_t = s, A_t = a ]\n\nRelationship 1 (average over the policy):\n  V^π(s) = Σ_a π(a | s) · Q^π(s, a)\n\nRelationship 2 (expand the first transition):\n  Q^π(s, a) = Σ_{s', r} p(s', r | s, a) · [ r + γ V^π(s') ]\n\nSubstituting one into the other gives the\nBellman expectation equation for V^π.",
+ invariant:"Terminal states have value 0 by definition. There is no future return from a terminal state.",
+ uses:"Every RL algorithm is an attempt to compute or approximate one of these value functions.",
+ strength:"Compresses an entire future of rewards into a single number per state (or per state-action pair).",
+ limits:"Requires the environment to be Markov. In a POMDP the value depends on more than the current observation.",
+ pitfall:"Mixing up the two relationships. V^π averages Q over actions; Q^π averages over transitions. Both are correct, but they go in opposite directions.",
+ question:"If a policy is uniform random over 4 actions and the Q-values at a state are 3, 5, 1, 4, what is V^π(s)?",
+ answer:"(3 + 5 + 1 + 4) / 4 = 13 / 4 = 3.25. V is the average of Q across actions under the policy.",
+ demo:"values",sample:"",inputKind:"text"},
+
+{id:"bellman",title:"Bellman equations",level:2,kind:"Foundation",status:"Runnable teaching lab",
+ summary:"The Bellman equation expresses the value of a state recursively in terms of the values of next states. It is the single most important equation in RL. There are two versions: expectation (for a given policy) and optimality (for the best policy).",
+ mental:"An equation that says the value of now is the reward now plus the value of next",
+ mentalText:"You do not need to unroll the whole future. You only need to know the value of the next state. Then V(s) = expected reward + γ · V(s'). This is the same idea behind dynamic programming, but applied to sequential decisions.",
+ steps:["Start from the definition of V^π(s) as the expected return.","Split the return into the immediate reward and the discounted rest.","Use the law of total expectation to expand the expectation.","Get the Bellman expectation equation.","Replace the average over actions with a max to get the Bellman optimality equation."],
+ pseudo:"Bellman expectation (for a given policy π):\n  V^π(s) = Σ_a π(a | s) Σ_{s', r} p(s', r | s, a) [ r + γ V^π(s') ]\n  Q^π(s, a) = Σ_{s', r} p(s', r | s, a) [ r + γ Σ_{a'} π(a' | s') Q^π(s', a') ]\n\nBellman optimality (for the best policy):\n  V*(s) = max_a Σ_{s', r} p(s', r | s, a) [ r + γ V*(s') ]\n  Q*(s, a) = Σ_{s', r} p(s', r | s, a) [ r + γ max_{a'} Q*(s', a') ]\n\nThe only difference between the two is the max\nversus the average over actions.",
+ invariant:"Every RL algorithm is an attempt to solve one of these two equations. The math is fixed; only the method of solution changes.",
+ uses:"Dynamic programming, TD learning, Q-learning, DQN. Every one of them is a way of solving the Bellman equation without knowing the full model.",
+ strength:"Turns an infinite-horizon optimization into a fixed-point equation on one function.",
+ limits:"Only exact when the environment is Markov and the model is known. In practice both are approximations.",
+ pitfall:"Forgetting the expectation over next states. If transitions are stochastic, you must sum over s' and r with their probabilities, not just use one sampled transition.",
+ question:"What is the only difference between the Bellman expectation equation and the Bellman optimality equation for V?",
+ answer:"The optimality version takes a max over actions instead of averaging over the policy's action probabilities. Everything else, including the expectation over next states and rewards, is identical.",
+ demo:"bellman",sample:"",inputKind:"text"},
+
+/* ---------- Chapter 2: Dynamic programming ---------- */
+{id:"dp",title:"Dynamic programming",level:3,kind:"DP",status:"Runnable teaching lab",
+ summary:"Dynamic programming solves the Bellman equation when the model is known. Policy evaluation computes V for a fixed policy. Policy iteration alternates evaluation and improvement. Value iteration combines them into one sweep.",
+ mental:"Solving a maze by pencil and paper, over and over, until nothing changes",
+ mentalText:"You start with a rough estimate of every cell's value. You update each cell using its neighbors' estimates. Repeat until the numbers stop changing. That fixed point is V*.",
+ steps:["Policy evaluation: fix the policy, iterate the Bellman expectation backup until V stabilizes.","Policy improvement: take the greedy action in every state using V.","Policy iteration: alternate evaluation and improvement until the policy stops changing.","Value iteration: use the Bellman optimality backup directly, one sweep at a time.","Extract the greedy policy from V*."],
+ pseudo:"Policy evaluation (iterative):\n  repeat until Δ < θ:\n    Δ = 0\n    for each state s:\n      v = V(s)\n      V(s) = Σ_a π(a|s) Σ_{s',r} p(s',r|s,a) [r + γ V(s')]\n      Δ = max(Δ, |v - V(s)|)\n\nPolicy improvement:\n  π'(s) = argmax_a Σ_{s',r} p(s',r|s,a) [r + γ V(s')]\n\nPolicy iteration:\n  repeat:\n    V = policy_evaluation(π)\n    π' = policy_improvement(V)\n  until π' == π\n\nValue iteration:\n  repeat until Δ < θ:\n    for each state s:\n      V(s) = max_a Σ_{s',r} p(s',r|s,a) [r + γ V(s')]",
+ invariant:"The policy improvement theorem guarantees that the greedy policy with respect to V^π is at least as good as π. This is what makes the alternation converge to the optimum.",
+ uses:"Planning when the full model is known. The inspiration for every model-free method.",
+ strength:"Exact solution in a finite MDP. No sampling noise.",
+ limits:"Needs the full transition model. The state space must be small enough to enumerate.",
+ pitfall:"Convergence requires γ<1 or a guaranteed-terminating MDP. For γ=1 in a continuing task, policy evaluation can diverge.",
+ question:"Why does policy iteration converge in a finite MDP?",
+ answer:"Every improvement step makes the policy at least as good. Since there are finitely many deterministic policies, and each step strictly improves (unless the policy is already optimal), the algorithm terminates at the optimal policy. The policy improvement theorem proves the 'at least as good' part.",
+ demo:"dp",sample:"",inputKind:"text"},
+
+/* ---------- Chapter 3: Model-free control ---------- */
+{id:"mctd",title:"Monte Carlo and TD(0)",level:3,kind:"Model-free",status:"Runnable teaching lab",
+ summary:"Monte Carlo waits until the episode ends and uses the actual return. TD(0) uses an estimate of the next state's value and updates immediately. MC has no bias and high variance; TD(0) has some bias and low variance.",
+ mental:"Waiting for the final score versus updating after every point",
+ mentalText:"MC is a student who only studies after the exam is graded. TD is a student who updates their guess after every question, using the next question's answer as a hint.",
+ steps:["MC: play one full episode, then update V(s) toward the actual return G_t.","TD(0): after one step, update V(s) toward r + γ V(s').","Understand the bias-variance tradeoff: MC uses only real rewards, TD uses a bootstrapped estimate.","Recognise TD(0) as a sample of the Bellman expectation backup."],
+ pseudo:"MC prediction (every-visit):\n  for each episode:\n    for each state s visited:\n      V(s) ← V(s) + α [ G_t - V(s) ]\n\nTD(0) prediction:\n  for each step:\n    δ = R_{t+1} + γ V(S_{t+1}) - V(S_t)\n    V(S_t) ← V(S_t) + α δ\n\nBias-variance:\n  MC: unbiased, high variance (full return)\n  TD: biased (uses V(S_{t+1}) which is an estimate),\n      low variance (only one random reward)\n\nTD target: R_{t+1} + γ V(S_{t+1})\nTD error:  δ_t = target - V(S_t)",
+ invariant:"The TD error is the quantity being reduced. It is the difference between what the agent expected and what it just experienced.",
+ uses:"TD(0) is the seed of SARSA, Q-learning, and every modern deep RL method. MC is still used for policy gradients.",
+ strength:"TD(0) can learn online, from incomplete episodes. MC requires complete episodes but has no bias.",
+ limits:"TD(0) is sensitive to the initial value function. MC is high-variance and slow.",
+ pitfall:"Confusing the TD target with the true return. The TD target uses V(S_{t+1}), which is itself an estimate. This is called bootstrapping. It is a feature, not a bug, but it is why TD is biased.",
+ question:"Why does TD(0) typically learn faster than MC in a long episodic task?",
+ answer:"TD(0) updates after every step, using the next state's value as a hint. MC only updates at the end of the episode. TD(0) also has lower variance because it uses one random reward at a time rather than the whole return.",
+ demo:"mctd",sample:"",inputKind:"text"},
+
+{id:"sarsa-q",title:"SARSA and Q-learning",level:3,kind:"Model-free control",status:"Runnable teaching lab",
+ summary:"SARSA updates using the action actually taken next. Q-learning updates using the best possible next action. This single difference makes SARSA on-policy and Q-learning off-policy, and it changes how they behave on risky problems.",
+ mental:"Two students with different study habits",
+ mentalText:"SARSA studies the questions they were actually asked. Q-learning studies the best possible questions they could have been asked. On a cliff edge, SARSA is cautious; Q-learning is optimistic and sometimes falls.",
+ steps:["Initialize a Q-table with small random values.","Observe state s, choose action a with ε-greedy.","Take a, observe r and s'.","SARSA: choose a' with ε-greedy, update Q(s,a) toward r + γ Q(s',a').","Q-learning: update Q(s,a) toward r + γ max_{a'} Q(s',a').","Repeat from s'."],
+ pseudo:"SARSA (on-policy, uses the next action taken):\n  Q(S,A) ← Q(S,A) + α [ R + γ Q(S',A') - Q(S,A) ]\n\nQ-learning (off-policy, uses the best next action):\n  Q(S,A) ← Q(S,A) + α [ R + γ max_{a'} Q(S',a') - Q(S,A) ]\n\nBoth use ε-greedy to select actions during learning.\nThe difference is only in the target.\n\nTerminal handling:\n  if S' is terminal: target = R\n  else:              target = R + γ (see above)",
+ invariant:"Q-learning converges to Q* regardless of the behaviour policy, provided every (s,a) is visited infinitely often. SARSA converges to the Q of the policy being followed.",
+ uses:"Tabular Q-learning is the canonical first RL algorithm. SARSA is the safe variant, often preferred in robotics and healthcare where mistakes are costly.",
+ strength:"Both are simple, provably convergent under the right conditions, and require no model.",
+ limits:"Tabular storage explodes with state count. Both are slow for large problems.",
+ pitfall:"Forgetting to set the target to just R at terminal states. If you add γ·max Q(s',a') with s' terminal, the value of the terminal state leaks into the update and corrupts learning.",
+ question:"Why does Q-learning learn the optimal policy while following an exploratory ε-greedy policy?",
+ answer:"The Q-learning target uses max over actions, which is independent of the behaviour policy. The behaviour policy only determines which (s,a) pairs are visited. As long as every pair is visited infinitely often and the step sizes satisfy the standard conditions, Q converges to Q* no matter how the agent behaves.",
+ demo:"sarsaq",sample:"",inputKind:"text"},
+
+{id:"explore",title:"Exploration",level:2,kind:"Exploration",status:"Runnable teaching lab",
+ summary:"The agent must balance exploiting what it already knows against exploring to find better options. ε-greedy is the simplest scheme. Optimistic initialization and UCB are more principled.",
+ mental:"A new restaurant versus your favourite",
+ mentalText:"You could go back to the restaurant you love (exploit), or try the new place (explore). The right balance depends on how much time you have and how uncertain you are.",
+ steps:["ε-greedy: with probability ε pick a random action, else the greedy action.","Decay ε over time so exploration decreases as you learn.","Optimistic initialization: start Q-values high so every action looks worth trying.","UCB: pick the action that maximizes Q plus an uncertainty bonus.","Decay schedules: linear, exponential, or 1/sqrt(t)."],
+ pseudo:"ε-greedy:\n  with probability ε:  pick a random action\n  otherwise:           pick argmax_a Q(s,a)\n\nε schedule:\n  ε_t = ε_0 · decay^t    (exponential)\n  ε_t = ε_0 / sqrt(t)    (polynomial)\n  or linear from ε_0 down to ε_min\n\nOptimistic init:\n  Q(s,a) = R_max for all (s,a)\n  every action is tried at least once\n\nUCB1:\n  pick a = argmax_a [ Q(s,a) + c · sqrt( ln(t) / N(s,a) ) ]\n  N(s,a) is the visit count of (s,a)\n  c balances exploitation and exploration",
+ invariant:"No exploration means no learning beyond the initial policy. Too much exploration means the agent never acts on what it has learned. The optimal balance depends on the time horizon and the noise in the rewards.",
+ uses:"Every tabular and deep RL algorithm has some exploration mechanism.",
+ strength:"ε-greedy is trivial to implement and works surprisingly well when ε is decayed properly.",
+ limits:"ε-greedy explores uniformly at random, which is inefficient when some actions are obviously bad.",
+ pitfall:"Leaving ε constant at a large value keeps the agent from ever converging. A good schedule starts high and decays.",
+ question:"Why is optimistic initialization a form of exploration?",
+ answer:"Starting Q-values above the true values makes every action look worth trying, so the agent naturally visits each one. As real rewards come in, the Q-values drop to their true levels, and the agent shifts to exploitation.",
+ demo:"explore",sample:"",inputKind:"text"},
+
+/* ---------- Chapter 4: Deep RL ---------- */
+{id:"fa",title:"Function approximation and DQN",level:4,kind:"Deep RL",status:"Concept lesson",
+ summary:"When the state space is too large for a table, approximate Q with a function. DQN uses a neural network for this, with two stability tricks: a replay buffer and a target network.",
+ mental:"A table that outgrew its shelf, replaced by a chart",
+ mentalText:"Instead of storing every value, learn a function that maps states to values. Generalize to states you have never seen. The neural network is that function.",
+ steps:["Replace the Q-table with a neural network Q(s, a; θ).","Store transitions (s, a, r, s', done) in a replay buffer.","Sample a mini-batch from the buffer for each update.","Compute the target using a frozen copy of the network, the target network.","Update the online network toward the target.","Every C steps, copy the online network into the target network."],
+ pseudo:"Q-network: Q(s, a; θ)  — small MLP for CartPole\n\nReplay buffer:\n  capacity ~ 10^5 transitions\n  sample uniformly at random\n\nTarget network:\n  θ⁻ is a frozen copy of θ\n  every C steps: θ⁻ ← θ\n  (or Polyak: θ⁻ ← τ θ + (1-τ) θ⁻)\n\nLoss:\n  y = r + γ (1 - done) max_{a'} Q(s', a'; θ⁻)\n  L = E[ (y - Q(s, a; θ))^2 ]\n\nUpdate θ by gradient descent on L.\n\nDouble DQN (removes overestimation bias):\n  a* = argmax_a Q(s', a; θ)      (online net selects)\n  y = r + γ Q(s', a*; θ⁻)        (target net evaluates)",
+ invariant:"Deadly triad: function approximation + bootstrapping + off-policy data can diverge. Replay and a target network are the standard fixes.",
+ uses:"DQN is the canonical deep RL method for discrete actions. Atari, robotics simulation, game playing.",
+ strength:"Scales to continuous state spaces. Generalizes across similar states.",
+ limits:"Only handles discrete action spaces in the vanilla form. Sensitive to hyperparameters. Sample inefficient compared to modern methods.",
+ pitfall:"Forgetting to freeze the target network. If the target moves with every gradient step, Q-learning becomes unstable and can diverge.",
+ question:"Why is a replay buffer necessary for DQN?",
+ answer:"Neural networks assume training samples are independently and identically distributed. Consecutive environment transitions are highly correlated. A replay buffer breaks the correlation by sampling uniformly at random from past transitions.",
+ demo:"none",sample:"",inputKind:"text"},
+
+{id:"pg",title:"Policy gradients and REINFORCE",level:4,kind:"Deep RL",status:"Concept lesson",
+ summary:"Instead of learning Q and deriving a policy, learn the policy directly. The policy gradient theorem says: multiply the score function of the action by the return-to-go. REINFORCE is the simplest implementation.",
+ mental:"Adjusting the probability of actions that worked",
+ mentalText:"If an action led to a good outcome, make it more likely next time. If it led to a bad outcome, make it less likely. Do this for every action in the episode, weighted by how much reward came after it.",
+ steps:["Parameterize the policy as π_θ(a|s).","Play an episode and record the actions, rewards, and log-probabilities.","Compute the return-to-go G_t for each step.","Compute the policy gradient: sum over t of G_t · ∇_θ log π_θ(A_t | S_t).","Update θ in the direction of the gradient.","Add a baseline to reduce variance: subtract b(S_t) from G_t."],
+ pseudo:"Policy gradient theorem:\n  ∇_θ J = E_π[ Σ_t ∇_θ log π_θ(A_t|S_t) · G_t ]\n\nREINFORCE update:\n  θ ← θ + α Σ_t G_t · ∇_θ log π_θ(A_t | S_t)\n\nWith a baseline b(S_t):\n  θ ← θ + α Σ_t (G_t - b(S_t)) · ∇_θ log π_θ(A_t | S_t)\n\nWhy the baseline is unbiased:\n  E[ ∇_θ log π_θ(a|s) · b(s) ]\n  = b(s) · ∇_θ Σ_a π_θ(a|s)\n  = b(s) · ∇_θ 1\n  = 0\n\nLog-derivative trick:\n  ∇_θ π_θ(a|s) = π_θ(a|s) · ∇_θ log π_θ(a|s)",
+ invariant:"The log-derivative trick lets you take the gradient of an expectation over the policy. The baseline does not change the expectation; it only changes the variance.",
+ uses:"Every policy gradient method: REINFORCE, Actor-Critic, PPO, TRPO, SAC. Continuous control and discrete games alike.",
+ strength:"Directly optimizes the policy. Handles continuous action spaces naturally. No Q-function needed for REINFORCE.",
+ limits:"High variance without a baseline. Sample inefficient. No exploration guarantee.",
+ pitfall:"Forgetting that the baseline must be a function of the state only. If the baseline depends on the action, it is not a valid baseline and the gradient is biased.",
+ question:"Why does subtracting a baseline not change the expected gradient?",
+ answer:"Because E[∇ log π(a|s) b(s)] = b(s) · Σ_a ∇ π(a|s) = b(s) · ∇ 1 = 0. The sum of the policy over actions is always 1, so its gradient is zero. Subtracting b(s) therefore adds zero in expectation.",
+ demo:"none",sample:"",inputKind:"text"},
+
+{id:"capstone",title:"Capstone",level:4,kind:"Capstone",status:"Checklist",
+ summary:"Train DQN and REINFORCE on CartPole from scratch. Report mean ± std over at least five seeds. Explain why single-seed results are not enough.",
+ mental:"The final exam: everything you have learned, on one problem",
+ mentalText:"You have all the pieces. Now put them together: an environment, a network, a loss, an optimizer, and a random seed. Run it five times with different seeds. Report the mean and the spread.",
+ steps:["Implement CartPole from scratch or use a simple physics simulation.","Implement a small MLP with hand-written backprop.","Implement DQN with replay and target network.","Implement REINFORCE with a baseline.","Train both for at least a few thousand steps.","Run five seeds each, and report mean ± std."],
+ pseudo:"Exit gate (all six, unaided):\n  1. Write the Bellman optimality equation for Q* from memory\n  2. Hand-update a Q-table for 3 steps with α=0.1, γ=0.9\n  3. Explain why Q-learning learns Q* while following ε-greedy\n  4. Derive the log-derivative trick and baseline unbiasedness\n  5. Code tabular Q-learning to solve FrozenLake\n  6. Train DQN and REINFORCE, report mean ± std over ≥5 seeds\n\nReading the curve:\n  mean going up: learning\n  std shrinking: converging\n  std wide: unstable, try a smaller learning rate\n  flat curve: bug or wrong hyperparameters",
+ invariant:"A single seed is not evidence. RL curves are noisy; the standard deviation across seeds is part of the result, not an afterthought.",
+ uses:"Every research paper, every production RL system, every comparison you make.",
+ strength:"Catches the difference between a genuinely better method and a lucky seed.",
+ limits:"Five seeds is a minimum, not a guarantee. Some problems need more.",
+ pitfall:"Reporting only the best seed or the best run. This is p-hacking. Report the mean and the standard deviation, always.",
+ question:"Why report mean ± std instead of a single number?",
+ answer:"RL is high-variance. Two methods might have the same mean but very different spreads. A method with a tight distribution is often more useful than one with occasional lucky runs. The spread tells you how reliable the method is.",
+ demo:"none",sample:"",inputKind:"text"}
+];
+
+const LESSONS=RAW.map(mk);
+const byId=Object.fromEntries(LESSONS.map(x=>[x.id,x]));
+
+/* ------------------------ Plain-English guide layer ---------------------- */
+const PLAIN_GUIDES={
+"mdp":{plain:"An MDP is a formal way to describe a decision problem where choices lead to other choices. It says: here are the situations you can be in, here are the actions you can take, here is what happens when you take them, here is what each outcome pays, and here is how much you care about the future.",example:"A robot vacuum in a room. States are positions. Actions are move forward/left/right/back. Transitions are where the robot ends up (usually exactly where it intended, sometimes slightly off). Rewards are +1 for a clean spot, −1 for bumping a wall. The discount says how much the robot cares about future cleanliness versus now.",terms:[["State","A description of the current situation."],["Action","A choice available in a state."],["Reward","A number the environment gives after an action."],["Policy","The rule that says which action to take in each state."]]},
+"returns":{plain:"The return is the total reward collected from a point onward, with future rewards worth less than immediate rewards. The discount factor γ controls how much less.",example:"If γ = 0.9, a reward of 10 now is worth 10. A reward of 10 next step is worth 9. Two steps away, 8.1. Ten steps away, about 3.5. Far-future rewards shrink quickly, so the agent focuses on the near future.",terms:[["Return","The sum of discounted future rewards."],["Discount factor γ","How much less a future reward is worth than a present one."],["Episodic","An episode that ends; γ can be 1."],["Continuing","A task that never ends; γ must be less than 1."]]},
+"values":{plain:"A value function is a forecast. It says how much reward you expect to collect from a state onward if you keep following the current policy. A Q-value adds one detail: you are about to take this specific action.",example:"In chess, a position where you are up a queen has a high value. The value assumes you keep playing well. The Q-value for 'move the queen to this square' is a narrower forecast: what if I make this move and then keep playing well?",terms:[["V^π(s)","Expected return from state s under policy π."],["Q^π(s,a)","Expected return from state s, taking action a, then following π."],["Expectation","A weighted average over possible outcomes."]]},
+"bellman":{plain:"The Bellman equation says the value of a state equals the reward you get right now plus the discounted value of the next state. This seems circular, but it lets you solve for all the values at once, because each value depends only on the values of its neighbors.",example:"Imagine you are in a gridworld. You are at cell A. One step to the right is cell B. If cell B is worth 10, and the immediate reward for moving right is −1, and γ = 0.9, then cell A is worth roughly −1 + 0.9 · 10 = 8. You do not need to know the whole grid, just the neighbors.",terms:[["Recursive","An equation that defines a value in terms of other values."],["Fixed point","A set of values where the equation is satisfied exactly."],["Backup","One use of the Bellman equation to update a value."]]},
+"dp":{plain:"Dynamic programming is the pencil-and-paper way to solve an MDP when you know the rules of the environment. It keeps updating each state's value using its neighbors, over and over, until nothing changes. That final set of values is the optimum.",example:"You have a 5×5 grid and you know the reward for every move. Write a rough guess for every cell's value. Now update each cell using its neighbors. Repeat. After a few sweeps the values settle. That is value iteration.",terms:[["Policy evaluation","Computing V for a fixed policy."],["Policy improvement","Taking the greedy action using V."],["Value iteration","Alternating the Bellman optimality backup."]]},
+"mctd":{plain:"Monte Carlo learning waits until an episode ends and then uses the actual rewards that were received. TD learning updates after every step, using an estimate of the next state's value instead of waiting. TD is faster and lower variance but slightly biased.",example:"MC is like studying only after the exam is graded. TD is like updating your guess after every practice question, using the next question's answer as a hint.",terms:[["Monte Carlo","Learning from complete episodes."],["Temporal difference","Learning from incomplete episodes by bootstrapping."],["Bootstrapping","Using an estimate to update an estimate."]]},
+"sarsa-q":{plain:"SARSA updates using the action that was actually taken next. Q-learning updates using the best possible next action. This makes Q-learning learn the optimal policy while following an exploratory one, and it makes SARSA more cautious on risky problems.",example:"Cliff walking: a grid where the bottom row is a cliff (very negative reward) and the goal is at the far end. Q-learning learns to walk right along the cliff edge because the optimal path is shortest. SARSA learns a safer path one row up, because it accounts for the chance of falling.",terms:[["On-policy","Learning about the policy you are following."],["Off-policy","Learning about a different policy than the one you are following."],["TD error","The difference between the expected and observed outcome."]]},
+"explore":{plain:"The agent must sometimes try new actions to discover better outcomes. ε-greedy is the simplest scheme: with small probability ε, try a random action. Otherwise pick the best-known action.",example:"A new restaurant versus your favourite. You could keep going to the favourite (exploit) or try the new place (explore). If you never try new places, you never find a better one. If you always try new places, you never enjoy your favourite.",terms:[["ε-greedy","With probability ε pick random, else pick the best."],["Optimistic init","Start Q-values high so every action looks worth trying."],["UCB","Add an uncertainty bonus to encourage under-visited actions."]]},
+"fa":{plain:"When the state space is too large to store a value for every state, use a function instead of a table. A neural network can take a state as input and output a value. DQN uses a neural network with two stability tricks: store past experiences in a buffer and freeze a copy of the network as a target.",example:"You cannot memorize a value for every possible picture of a road, but a neural network can generalize: similar pictures get similar values. The replay buffer breaks the correlation between consecutive training samples, and the target network stops the target from moving with every update.",terms:[["Function approximation","Using a function instead of a table."],["Replay buffer","A store of past transitions sampled randomly."],["Target network","A frozen copy of the network used to compute targets."]]},
+"pg":{plain:"Instead of learning values, learn the policy directly. If an action led to a good outcome, make it more likely next time. The policy gradient theorem says: multiply the log-probability of the action by the return-to-go and take the gradient.",example:"You are learning to play darts. When a throw lands near the bullseye, you try to repeat that motion. When it misses badly, you adjust away from it. REINFORCE does the same thing, but with numbers.",terms:[["Policy gradient","The gradient of expected return with respect to policy parameters."],["Log-derivative trick","A way to differentiate an expectation over a policy."],["Baseline","A state-dependent value subtracted from the return to reduce variance."]]},
+"capstone":{plain:"Train DQN and REINFORCE on CartPole from scratch. Report mean ± std over at least five seeds. This is the exit gate: if you can do this, you have finished the course.",example:"CartPole is a pole balanced on a cart. The agent pushes the cart left or right to keep the pole upright. DQN learns Q-values for each push. REINFORCE learns a probability distribution over pushes. Both can solve it in a few thousand steps.",terms:[["Seed","A starting number for the random generator. Different seeds give different runs."],["Mean ± std","The average over runs and how spread out they are."],["Capstone","The final project that pulls everything together."]]}
+};
+
+/* ============================================================================
+   PYTHON CODE EXAMPLES
+   ========================================================================== */
+const CODE={
+"mdp":{python:`# A tiny MDP: a 3-state line with rewards
+#  S0 --(+1)--> S1 --(+10)--> terminal
+
+states = ["S0", "S1", "T"]
+actions = ["right"]
+
+# Deterministic transitions: state -> action -> (next_state, reward)
+P = {
+    ("S0", "right"): ("S1", 1.0),
+    ("S1", "right"): ("T",  10.0),
+    ("T",  "right"): ("T",  0.0),
+}
+
+def run_episode(policy, gamma=0.9, max_steps=20):
+    s = "S0"
+    total = 0.0
+    discount = 1.0
+    trajectory = []
+    for t in range(max_steps):
+        if s == "T":
+            break
+        a = policy(s)
+        s_next, r = P[(s, a)]
+        total += discount * r
+        trajectory.append((s, a, r, s_next))
+        s = s_next
+        discount *= gamma
+    return total, trajectory
+
+# Always move right
+def always_right(s):
+    return "right"
+
+g, traj = run_episode(always_right)
+print("return:", g)
+for step in traj:
+    print(" ", step)
+`},
+"returns":{python:`def discounted_return(rewards, gamma):
+    """Return from time 0: sum gamma^k * R_{k+1}."""
+    total = 0.0
+    discount = 1.0
+    for r in rewards:
+        total += discount * r
+        discount *= gamma
+    return total
+
+# A stream of rewards
+rewards = [10, 10, 10, 10, 10]
+
+for gamma in [0.0, 0.5, 0.9, 0.99, 1.0]:
+    print(f"gamma = {gamma:>4}: return = {discounted_return(rewards, gamma):.4f}")
+
+# Bounded rewards, geometric series
+R_max = 10
+for gamma in [0.5, 0.9, 0.99]:
+    bound = R_max / (1 - gamma)
+    print(f"gamma = {gamma}: upper bound on |G| is {bound:.2f}")
+`},
+"values":{python:`import numpy as np
+
+# A tiny 2-state MDP
+# State A: two actions. Action 0 -> +1 reward, state B. Action 1 -> +2, state B.
+# State B: terminal, value 0.
+# Policy: uniform random.
+
+gamma = 0.9
+
+# Q-values from A (given)
+Q_A = np.array([1.0 + gamma * 0.0,
+                2.0 + gamma * 0.0])
+
+# V from A under uniform policy
+V_A = 0.5 * Q_A[0] + 0.5 * Q_A[1]
+print("Q values at A:", Q_A)
+print("V(A) with uniform policy:", V_A)
+
+# Greedy policy would pick action 1
+print("greedy action at A:", int(np.argmax(Q_A)))
+`},
+"bellman":{python:`# Bellman expectation backup on a tiny gridworld
+# 3x3 grid, no walls, goal at bottom-right
+# Step reward -1, goal reward 0
+# gamma = 0.9
+
+import numpy as np
+
+ROWS, COLS = 3, 3
+GAMMA = 0.9
+STEP_REWARD = -1.0
+GOAL = (2, 2)
+
+def is_terminal(r, c):
+    return (r, c) == GOAL
+
+def step(r, c, a):
+    dr, dc = [(-1,0),(0,1),(1,0),(0,-1)][a]
+    nr, nc = r + dr, c + dc
+    if not (0 <= nr < ROWS and 0 <= nc < COLS):
+        nr, nc = r, c
+    if is_terminal(nr, nc):
+        return nr, nc, 0.0
+    return nr, nc, STEP_REWARD
+
+# Value iteration
+V = np.zeros((ROWS, COLS))
+for it in range(200):
+    delta = 0
+    V_new = V.copy()
+    for r in range(ROWS):
+        for c in range(COLS):
+            if is_terminal(r, c):
+                continue
+            qs = []
+            for a in range(4):
+                nr, nc, reward = step(r, c, a)
+                qs.append(reward + GAMMA * V[nr, nc])
+            V_new[r, c] = max(qs)
+            delta = max(delta, abs(V_new[r, c] - V[r, c]))
+    V = V_new
+    if delta < 1e-8:
+        break
+
+print("converged in", it + 1, "iterations")
+print(np.round(V, 4))
+`},
+"dp":{python:`import numpy as np
+
+# 4x4 gridworld, no walls, goal at (3,3)
+ROWS, COLS = 4, 4
+GAMMA = 0.9
+STEP_REWARD = -1.0
+GOAL = (3, 3)
+
+def is_terminal(r, c): return (r, c) == GOAL
+def step(r, c, a):
+    dr, dc = [(-1,0),(0,1),(1,0),(0,-1)][a]
+    nr, nc = r + dr, c + dc
+    if not (0 <= nr < ROWS and 0 <= nc < COLS):
+        nr, nc = r, c
+    if is_terminal(nr, nc):
+        return nr, nc, 0.0
+    return nr, nc, STEP_REWARD
+
+# Policy evaluation
+def policy_evaluation(policy, theta=1e-8):
+    V = np.zeros((ROWS, COLS))
+    while True:
+        delta = 0
+        for r in range(ROWS):
+            for c in range(COLS):
+                if is_terminal(r, c):
+                    continue
+                v = V[r, c]
+                new_v = 0
+                for a in range(4):
+                    p = policy[r, c, a]
+                    if p == 0:
+                        continue
+                    nr, nc, reward = step(r, c, a)
+                    new_v += p * (reward + GAMMA * V[nr, nc])
+                V[r, c] = new_v
+                delta = max(delta, abs(v - new_v))
+        if delta < theta:
+            return V
+
+# Policy improvement
+def policy_improvement(V):
+    policy = np.zeros((ROWS, COLS, 4))
+    for r in range(ROWS):
+        for c in range(COLS):
+            if is_terminal(r, c):
+                continue
+            qs = []
+            for a in range(4):
+                nr, nc, reward = step(r, c, a)
+                qs.append(reward + GAMMA * V[nr, nc])
+            best = int(np.argmax(qs))
+            policy[r, c, best] = 1.0
+    return policy
+
+# Policy iteration
+policy = np.ones((ROWS, COLS, 4)) / 4
+for outer in range(50):
+    V = policy_evaluation(policy)
+    new_policy = policy_improvement(V)
+    if np.allclose(policy, new_policy):
+        break
+    policy = new_policy
+
+print("policy iteration converged in", outer + 1, "outer steps")
+print(np.round(V, 3))
+`},
+"mctd":{python:`import numpy as np
+
+# Toy environment: 5 states in a line, deterministic, terminal on the right
+N_STATES = 5
+TERMINAL = N_STATES - 1
+GAMMA = 0.9
+
+def step(s, a):
+    """a = 0 (left), 1 (right). Rewards only on the terminal arrival."""
+    ns = max(0, min(N_STATES - 1, s + (1 if a == 1 else -1)))
+    reward = 1.0 if ns == TERMINAL and s != TERMINAL else 0.0
+    done = (ns == TERMINAL)
+    return ns, reward, done
+
+# Monte Carlo prediction
+def mc_prediction(episodes=2000, alpha=0.05, seed=0):
+    rng = np.random.default_rng(seed)
+    V = np.zeros(N_STATES)
+    for _ in range(episodes):
+        # generate an episode with a random policy
+        s = 0
+        trajectory = []
+        for _ in range(50):
+            a = rng.integers(0, 2)
+            ns, r, done = step(s, a)
+            trajectory.append((s, r))
+            s = ns
+            if done:
+                break
+        # every-visit MC: update V toward the actual return
+        G = 0.0
+        for s, r in reversed(trajectory):
+            G = r + GAMMA * G
+            V[s] += alpha * (G - V[s])
+    return V
+
+# TD(0) prediction
+def td0_prediction(episodes=2000, alpha=0.05, seed=0):
+    rng = np.random.default_rng(seed)
+    V = np.zeros(N_STATES)
+    for _ in range(episodes):
+        s = 0
+        for _ in range(50):
+            a = rng.integers(0, 2)
+            ns, r, done = step(s, a)
+            target = r + GAMMA * (0.0 if done else V[ns])
+            V[s] += alpha * (target - V[s])
+            s = ns
+            if done:
+                break
+    return V
+
+print("MC   V:", np.round(mc_prediction(), 3))
+print("TD(0)V:", np.round(td0_prediction(), 3))
+`},
+"sarsaq":{python:`import numpy as np
+
+# 4x4 gridworld, goal at (3,3), step reward -1, goal reward 0
+ROWS, COLS = 4, 4
+GAMMA = 0.95
+ALPHA = 0.1
+EPSILON = 0.1
+
+def is_terminal(r, c): return (r, c) == (3, 3)
+def step(r, c, a):
+    dr, dc = [(-1,0),(0,1),(1,0),(0,-1)][a]
+    nr, nc = r + dr, c + dc
+    if not (0 <= nr < ROWS and 0 <= nc < COLS):
+        nr, nc = r, c
+    if is_terminal(nr, nc):
+        return nr, nc, 0.0, True
+    return nr, nc, -1.0, False
+
+def eps_greedy(Q, r, c, eps, rng):
+    if rng.random() < eps:
+        return rng.integers(0, 4)
+    return int(np.argmax(Q[r, c]))
+
+def run_episode(Q, algo, seed=0):
+    rng = np.random.default_rng(seed)
+    r, c = 0, 0
+    a = eps_greedy(Q, r, c, EPSILON, rng)
+    total = 0.0
+    for _ in range(200):
+        nr, nc, reward, done = step(r, c, a)
+        total += reward
+        if algo == "qlearning":
+            target = reward + (0 if done else GAMMA * np.max(Q[nr, nc]))
+        else:
+            na = eps_greedy(Q, nr, nc, EPSILON, rng)
+            target = reward + (0 if done else GAMMA * Q[nr, nc, na])
+        Q[r, c, a] += ALPHA * (target - Q[r, c, a])
+        r, c = nr, nc
+        if done:
+            break
+        a = eps_greedy(Q, r, c, EPSILON, rng) if algo == "qlearning" else na
+    return total
+
+for algo in ["qlearning", "sarsa"]:
+    Q = np.zeros((ROWS, COLS, 4))
+    for ep in range(2000):
+        run_episode(Q, algo, seed=ep)
+    # greedy evaluation
+    r, c = 0, 0
+    total = 0.0
+    for _ in range(50):
+        if is_terminal(r, c):
+            break
+        a = int(np.argmax(Q[r, c]))
+        r, c, reward, done = step(r, c, a)
+        total += reward
+        if done:
+            break
+    print(f"{algo:>10}: greedy return = {total:.2f}")
+`},
+"explore":{python:`import numpy as np
+
+# 5-armed bandit, each arm has a different mean reward
+TRUE_MEANS = np.array([0.3, 0.1, 0.5, 0.4, 0.2])
+
+def pull(a, rng):
+    return rng.normal(TRUE_MEANS[a], 0.1)
+
+# ε-greedy
+def eps_greedy(mean, count, epsilon, rng):
+    if rng.random() < epsilon:
+        return rng.integers(0, len(mean))
+    return int(np.argmax(mean))
+
+# UCB1
+def ucb1(mean, count, t, c=1.0):
+    if np.any(count == 0):
+        return int(np.argmin(count))   # try each arm at least once
+    bonus = c * np.sqrt(np.log(t + 1) / count)
+    return int(np.argmax(mean + bonus))
+
+def run(strategy, steps=2000, seed=0):
+    rng = np.random.default_rng(seed)
+    mean = np.zeros(5)
+    count = np.zeros(5)
+    total_reward = 0.0
+    for t in range(steps):
+        if strategy == "eps":
+            a = eps_greedy(mean, count, 0.1, rng)
+        else:
+            a = ucb1(mean, count, t)
+        r = pull(a, rng)
+        total_reward += r
+        count[a] += 1
+        mean[a] += (r - mean[a]) / count[a]
+    return total_reward / steps
+
+print("ε-greedy mean reward:", run("eps"))
+print("UCB1     mean reward:", run("ucb"))
+print("optimal arm mean   :", TRUE_MEANS.max())
+`},
+"fa":{python:`# A minimal DQN skeleton. Not runnable without an environment,
+# but the structure is exactly what you would write.
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+class QNetwork(nn.Module):
+    def __init__(self, obs_dim, n_actions, hidden=64):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(obs_dim, hidden), nn.ReLU(),
+            nn.Linear(hidden, hidden), nn.ReLU(),
+            nn.Linear(hidden, n_actions),
+        )
+    def forward(self, x):
+        return self.net(x)
+
+class ReplayBuffer:
+    def __init__(self, capacity=100_000):
+        self.buffer = []
+        self.capacity = capacity
+    def push(self, s, a, r, s_next, done):
+        self.buffer.append((s, a, r, s_next, done))
+        if len(self.buffer) > self.capacity:
+            self.buffer.pop(0)
+    def sample(self, batch_size):
+        idx = np.random.choice(len(self.buffer), batch_size, replace=False)
+        return [self.buffer[i] for i in idx]
+    def __len__(self):
+        return len(self.buffer)
+
+# Training loop skeleton
+q_online = QNetwork(4, 2)
+q_target = QNetwork(4, 2)
+q_target.load_state_dict(q_online.state_dict())
+optimizer = torch.optim.Adam(q_online.parameters(), lr=1e-3)
+buffer = ReplayBuffer()
+gamma = 0.99
+
+for step in range(100_000):
+    # s, a, r, s_next, done = env.step(...)
+    # buffer.push(s, a, r, s_next, done)
+    if len(buffer) < 1000:
+        continue
+    batch = buffer.sample(64)
+    s = torch.tensor([b[0] for b in batch], dtype=torch.float32)
+    a = torch.tensor([b[1] for b in batch], dtype=torch.long)
+    r = torch.tensor([b[2] for b in batch], dtype=torch.float32)
+    s_next = torch.tensor([b[3] for b in batch], dtype=torch.float32)
+    done = torch.tensor([b[4] for b in batch], dtype=torch.float32)
+
+    with torch.no_grad():
+        q_next = q_target(s_next).max(dim=1).values
+        target = r + gamma * (1 - done) * q_next
+    q = q_online(s).gather(1, a.unsqueeze(1)).squeeze(1)
+    loss = ((q - target) ** 2).mean()
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if step % 1000 == 0:
+        q_target.load_state_dict(q_online.state_dict())
+`},
+"pg":{python:`# REINFORCE on a tiny discrete environment. This is the whole algorithm.
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+class Policy(nn.Module):
+    def __init__(self, obs_dim, n_actions, hidden=64):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(obs_dim, hidden), nn.ReLU(),
+            nn.Linear(hidden, hidden), nn.ReLU(),
+            nn.Linear(hidden, n_actions),
+        )
+    def forward(self, x):
+        logits = self.net(x)
+        return torch.distributions.Categorical(logits=logits)
+
+policy = Policy(4, 2)
+optimizer = torch.optim.Adam(policy.parameters(), lr=1e-3)
+gamma = 0.99
+
+for episode in range(1000):
+    # collect one episode
+    log_probs = []
+    rewards = []
+    state = env.reset()
+    for t in range(500):
+        dist = policy(torch.tensor(state, dtype=torch.float32))
+        action = dist.sample()
+        log_probs.append(dist.log_prob(action))
+        state, reward, done, _ = env.step(action.item())
+        rewards.append(reward)
+        if done:
+            break
+
+    # compute return-to-go for each step
+    returns = []
+    G = 0.0
+    for r in reversed(rewards):
+        G = r + gamma * G
+        returns.append(G)
+    returns.reverse()
+    returns = torch.tensor(returns, dtype=torch.float32)
+
+    # normalize returns (optional, reduces variance)
+    if len(returns) > 1:
+        returns = (returns - returns.mean()) / (returns.std() + 1e-8)
+
+    # policy loss: negative because we want to ascend the gradient
+    loss = 0.0
+    for lp, G in zip(log_probs, returns):
+        loss = loss - lp * G
+
+    optimizer.zero_grad()
+    loss.backward()
+    optimizer.step()
+
+    if episode % 50 == 0:
+        print(f"episode {episode}: total reward = {sum(rewards):.1f}")
+`},
+"capstone":{python:`# Post-mortem template for the capstone
+
+"""
+CAPSTONE POST-MORTEM
+
+What worked:
+  - REINFORCE with a baseline learned CartPole in about 800 episodes.
+  - DQN with a target network every 500 steps converged in about 2000 steps.
+
+What did not work:
+  - DQN without a target network diverged after 500 steps.
+  - REINFORCE without a baseline had such high variance that some seeds never learned.
+
+What the curves said:
+  - DQN: mean reward rose quickly and std shrank over 5 seeds.
+  - REINFORCE: mean reward rose but std stayed wide; a baseline helped.
+
+What I would change next:
+  - Try Double DQN to reduce overestimation.
+  - Try entropy regularization on the policy to prevent premature determinism.
+
+What surprised me:
+  - The seed mattered as much as the hyperparameters for REINFORCE.
+"""
+
+# Reproducibility check
+import random, numpy as np, torch
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+for seed in [1, 2, 3, 4, 5]:
+    set_seed(seed)
+    # ... train and record the mean return ...
+    pass
+`}
+};
+function codeRecord(l){return CODE[l.id]||null}
+function codeText(l){
+ const c=codeRecord(l);
+ if(c)return c.python;
+ return '# CONCEPT OUTLINE, NOT EXECUTABLE\n# Lesson: '+l.title+'\n\n# Core idea\n# '+String(l.summary||'').replace(/\n/g,'\n# ')+'\n\n# Pseudocode\n'+String(l.pseudo||'').split('\n').map(x=>'# '+x).join('\n')+'\n';
+}
+function statusClass(l){return /Runnable/.test(l.status)?'good':'warn'}
+
+/* ============================================================================
+   State and shell
+   ========================================================================== */
+const state={tab:'lesson',page:'home',current:null,completed:new Set(),bookmarks:new Set(),theme:'system',drafts:{}};
+function save(){try{localStorage.setItem('az-rl-studio',JSON.stringify({schemaVersion:1,completed:[...state.completed],bookmarks:[...state.bookmarks],theme:state.theme,current:state.current,tab:state.tab,drafts:state.drafts}))}catch(e){}}
+function load(){try{const d=JSON.parse(localStorage.getItem('az-rl-studio')||'null');if(!d||d.schemaVersion!==1)return;
+ state.completed=new Set((d.completed||[]).filter(id=>byId[id]));
+ state.bookmarks=new Set((d.bookmarks||[]).filter(id=>byId[id]));
+ state.theme=['system','light','dark'].includes(d.theme)?d.theme:'system';
+ state.current=byId[d.current]?d.current:null;
+ state.tab=['lesson','gridworld','deeplab','cheatsheet'].includes(d.tab)?d.tab:'lesson';
+ state.drafts=d.drafts&&typeof d.drafts==='object'?d.drafts:{};}catch(e){}}
+function applyTheme(){let t=state.theme;if(t==='system')t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark';document.documentElement.dataset.theme=t;const sel=$('#themeSelect');if(sel)sel.value=state.theme}
+function getChapter(id){return CHAPTERS.find(c=>c.ids.includes(id))||CHAPTERS[0]}
+function progress(){
+ const n=state.completed.size,t=LESSONS.length;
+ $('#progressText').textContent=`${n} / ${t}`;
+ $('#progressFill').style.width=(n/t*100)+'%';
+ $('#lessonCount').textContent=t+' lessons';
+ $('#catalogCount').textContent=`${CHAPTERS.length} chapters · ${t} lessons · Gridworld + Deep Lab`;
+ $('#progressBar').setAttribute('aria-valuenow',String(Math.round(n/t*100)));
+}
+function renderTree(){
+ const q=$('#searchInput').value.toLowerCase().trim(),ch=$('#chapterFilter').value;
+ const root=$('#courseTree');root.textContent='';
+ for(const c of CHAPTERS){
+  if(ch!=='all'&&c.id!==ch)continue;
+  const rows=c.ids.map(id=>byId[id]).filter(x=>x&&(!q||(x.title+' '+x.summary+' '+x.kind+' '+c.title).toLowerCase().includes(q)));
+  if(!rows.length)continue;
+  const group=document.createElement('section');
+  const label=document.createElement('div');label.className='group-label';
+  label.innerHTML=`<span>${esc(c.title)}</span><span>${rows.length}</span>`;
+  group.append(label);
+  rows.forEach(l=>{
+   const b=document.createElement('button');b.type='button';
+   b.className='link'+(state.current===l.id?' active':'');
+   b.dataset.lesson=l.id;
+   b.innerHTML=`<span class="num">${String(LESSONS.indexOf(l)).padStart(2,'0')}</span><span class="name">${esc(l.title)}</span>${state.completed.has(l.id)?'<span class="done" aria-label="completed">✓</span>':''}`;
+   group.append(b);
+  });
+  root.append(group);
+ }
+ if(!root.children.length)root.innerHTML='<p class="muted">No matching lessons.</p>';
+ progress();
+}
+function listToHTML(a){return `<ol class="steps">${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`}
+
+/* ============================================================================
+   Lesson rendering
+   ========================================================================== */
+function renderLesson(id){
+ const l=byId[id];if(!l){renderHome();return}
+ state.page='lesson';state.current=id;
+ const c=getChapter(id);const index=LESSONS.indexOf(l);const next=LESSONS[(index+1)%LESSONS.length];
+ const plain=PLAIN_GUIDES[id]||{plain:l.summary,example:l.mentalText,terms:[]};
+ const hasDemo=l.demo&&l.demo!=='none';
+ const demoArea=hasDemo?`<section class="panel"><div class="panel-head"><h2>${esc(l.demoTitle||'Interactive lab')}</h2><p>Runs in your browser. Nothing is uploaded.</p></div><div class="body"><div class="lab-top"><label for="labInput">Input</label><button class="btn" id="resetSample">Reset sample</button><button class="btn primary" id="runLab">Run lab</button></div><textarea class="lab-input" id="labInput" maxlength="2000" aria-label="Lab input" spellcheck="false">${esc(l.sample||'')}</textarea><div class="lab-cols"><div><div class="label">Output</div><div class="lab-output" id="labEncoded">Run the lab to see output.</div></div><div><div class="label">Explanation</div><div class="lab-output" id="labDecoded">Step notes appear here.</div></div></div></div></section>`:'';
+ const code=state.drafts[id]??codeText(l);
+ $('#mainView').innerHTML=`<div class="breadcrumb">RL Studio / ${esc(c.title)}</div>
+<header class="header">
+ <div class="eyebrow">LESSON ${String(index).padStart(2,'0')} · ${esc(l.kind)}</div>
+ <h1>${esc(l.title)}</h1>
+ <p>${esc(l.summary)}</p>
+ <div class="tags"><span class="tag">Level ${l.level}</span><span class="tag ${statusClass(l)}">${esc(l.status)}</span><span class="tag">${esc(c.title.replace(/^\d+\.\s*/,''))}</span></div>
+ <div class="header-actions">
+  <button class="btn" id="bookmarkBtn">${state.bookmarks.has(id)?'★ Bookmarked':'☆ Bookmark'}</button>
+  <button class="btn primary" id="completeBtn">${state.completed.has(id)?'✓ Completed':'Mark complete'}</button>
+ </div>
+</header>
+
+<section class="panel"><div class="panel-head"><h2>Start here · in simple terms</h2><p>Read this first. Then look at the technical detail below.</p></div><div class="body"><div class="plain-guide"><div><div class="plain-label">IN SIMPLE TERMS</div><p class="plain-copy">${esc(plain.plain)}</p><div class="plain-example"><strong>Example you can picture</strong><p>${esc(plain.example)}</p></div></div><aside class="mental"><small>Mental picture</small><strong>${esc(l.mental)}</strong><p>${esc(l.mentalText)}</p></aside></div><div class="words-block"><div class="label">Words to know</div><div class="words-grid">${(plain.terms||[]).map(([term,def])=>`<div class="word-card"><strong>${esc(term)}</strong><p>${esc(def)}</p></div>`).join('')}</div></div></div></section>
+
+<section class="panel"><div class="panel-head"><h2>1. How it works</h2><p>Step by step, with the key rule.</p></div><div class="body two"><div>${listToHTML(l.steps)}<div class="takeaway" style="margin-top:14px"><strong>Key rule:</strong> ${esc(l.invariant)}</div></div><pre class="pseudo">${esc(l.pseudo)}</pre></div></section>
+
+${demoArea}
+
+<section class="panel"><div class="panel-head"><h2>2. Code and usage</h2><p>Reference code is for learning. It is not audited.</p></div><div class="code-head"><div><span class="tag">${codeRecord(l)?'Python example':'Concept outline'}</span> <span class="tag">Editable</span></div><div class="header-actions" style="margin:0"><button class="btn" id="copyCode">Copy code</button><button class="btn" id="downloadCode">Download</button></div></div><textarea id="codeEditor" class="code-editor" spellcheck="false" aria-label="Editable code">${esc(code)}</textarea><div class="code-foot"><span>Reference example only.</span></div><div class="body"><div class="mini"><h3>Where it is used</h3><p>${esc(l.uses||'')}</p></div><div class="notice danger" style="margin-top:12px"><strong>Common pitfall:</strong> ${esc(l.pitfall||'')}</div></div></section>
+
+<section class="panel"><div class="panel-head"><h2>3. Check yourself</h2><p>Try to answer before opening the explanation.</p></div><div class="body"><details class="practice"><summary>${esc(l.question||'')}</summary><p>${esc(l.answer||'')}</p></details></div></section>
+
+<footer class="footer"><span>Az RL Studio</span><span>Lesson ${index} of ${LESSONS.length-1} · Next: ${esc(next.title)}</span><button class="btn" id="nextLesson">Next →</button></footer>`;
+
+ $('#bookmarkBtn').onclick=()=>{state.bookmarks.has(id)?state.bookmarks.delete(id):state.bookmarks.add(id);save();renderLesson(id);toast(state.bookmarks.has(id)?'Bookmarked':'Removed')};
+ $('#completeBtn').onclick=()=>{state.completed.has(id)?state.completed.delete(id):state.completed.add(id);save();renderLesson(id);toast(state.completed.has(id)?'Lesson completed':'Completion removed')};
+ $('#nextLesson').onclick=()=>openLesson(next.id);
+ $('#copyCode').onclick=async()=>{const v=$('#codeEditor').value;try{await navigator.clipboard.writeText(v);toast('Code copied')}catch{const ta=$('#codeEditor');ta.select();document.execCommand('copy');toast('Code copied')}};
+ $('#downloadCode').onclick=()=>{const r=codeRecord(l);downloadText(`${id}.py`, $('#codeEditor').value,'text/x-python')};
+ $('#codeEditor').addEventListener('input',()=>{state.drafts[id]=$('#codeEditor').value;save()});
+ if(hasDemo){
+  $('#runLab').onclick=()=>runLab(l);
+  $('#resetSample').onclick=()=>{$('#labInput').value=l.sample||'';$('#labEncoded').textContent='Run the lab to see output.';$('#labDecoded').textContent='Step notes appear here.'};
+ }
+ renderTree();save();
+}
+
+function renderHome(){
+ state.page='home';
+ $('#mainView').innerHTML=`<div class="home-hero"><div class="eyebrow">AZ · ENGINEERING TOOLBOOK</div><h1>From “what is a reward?” to tabular and deep RL from scratch.</h1><p>A beginner-first course. Every lesson starts with a plain-language explanation, an example you can picture, and the words you need. Then it derives the math, runs an interactive lab, and gives you a check. The Gridworld Lab lets you solve real MDPs with dynamic programming, SARSA and Q-learning. Every number is computed by the page.</p><div class="header-actions" style="margin:0"><button class="btn primary" id="startFirst">Start at the beginning</button><button class="btn" id="resumeLesson">Continue lesson</button><button class="btn" id="openGridworld">Open Gridworld Lab</button></div></div>
+<div class="stats"><div class="stat"><strong>${CHAPTERS.length}</strong><span>chapters</span></div><div class="stat"><strong>${LESSONS.length}</strong><span>lessons</span></div><div class="stat"><strong>${LESSONS.filter(l=>l.demo&&l.demo!=='none').length}</strong><span>runnable labs</span></div><div class="stat"><strong>1</strong><span>standalone HTML file</span></div></div>
+<section class="panel"><div class="panel-head"><h2>Honest scope</h2><p>One app covers the whole curriculum. The tabular engine is small but real.</p></div><div class="body two"><div class="mini"><h3>What runs here</h3><p>A real gridworld MDP with an editable grid and a slip toggle; policy evaluation, policy iteration and value iteration; SARSA and Q-learning with ε-greedy exploration; a value heatmap, policy arrows, learning curves and a Q-table viewer; a Deep Lab frame with a tiny MLP and a working CartPole simulation for demonstration; and lessons with worked numeric examples that reproduce on the page.</p></div><div class="mini"><h3>What is deferred</h3><p>Full DQN training on CartPole with replay and target network; a full REINFORCE training run with a neural network; Actor-Critic and PPO. These are follow-on studios. The Deep Lab shows the structure and lets you run a simple hand-written policy but does not replace the tabular engine.</p></div></div></section>
+<div class="panel"><div class="panel-head"><h2>Course map</h2><p>Four chapters. Each lesson advances only when you can state the must-be-able-to in your own words.</p></div><div class="body"><div class="chapter-cards">${CHAPTERS.map((c,i)=>`<button class="chapter-card" data-chapter="${c.id}"><span class="num">CHAPTER ${String(i+1).padStart(2,'0')} · ${c.ids.length} LESSONS</span><strong>${esc(c.title.replace(/^\d+\.\s*/,''))}</strong><p>${esc(c.desc)}</p></button>`).join('')}</div></div></div>
+<footer class="footer"><span>Az RL Studio</span><span>All computation runs in your browser; nothing is uploaded.</span></footer>`;
+ $('#startFirst').onclick=()=>openLesson('mdp');
+ $('#resumeLesson').onclick=()=>openLesson(state.current&&byId[state.current]?state.current:'mdp');
+ $('#openGridworld').onclick=()=>setTab('gridworld');
+ $('#mainView').querySelectorAll('[data-chapter]').forEach(b=>b.onclick=()=>{const c=CHAPTERS.find(x=>x.id===b.dataset.chapter);if(c)openLesson(c.ids[0])});
+}
+
+function renderProgressPage(){
+ state.page='progress';
+ $('#mainView').innerHTML=`<div class="breadcrumb">RL Studio / Bookmarks & progress</div><header class="header"><div class="eyebrow">LOCAL ONLY</div><h1>Bookmarks and progress</h1><p>Progress is kept in this browser. Export JSON to move it or keep a backup.</p></header>
+<section class="panel"><div class="panel-head"><h2>Completed lessons</h2></div><div class="body">${state.completed.size?`<div class="references">${[...state.completed].map(id=>`<a href="#${id}" data-open="${id}">${esc(byId[id].title)}</a>`).join('')}</div>`:'<p class="muted">No lessons marked complete yet.</p>'}</div></section>
+<section class="panel"><div class="panel-head"><h2>Bookmarks</h2></div><div class="body">${state.bookmarks.size?`<div class="references">${[...state.bookmarks].map(id=>`<a href="#${id}" data-open="${id}">${esc(byId[id].title)}</a>`).join('')}</div>`:'<p class="muted">No bookmarks yet.</p>'}</div></section>
+<section class="panel"><div class="panel-head"><h2>Progress data</h2></div><div class="body"><div class="header-actions" style="margin:0"><button class="btn primary" id="exportProgress">Export progress JSON</button><button class="btn" id="clearProgress">Clear completion marks</button></div></div></section>`;
+ $('#mainView').querySelectorAll('[data-open]').forEach(a=>a.onclick=e=>{e.preventDefault();openLesson(a.dataset.open)});
+ $('#exportProgress').onclick=exportProgress;
+ $('#clearProgress').onclick=()=>{if(confirm('Clear all completion marks?')){state.completed.clear();save();renderProgressPage();renderTree();toast('Cleared')}};
+}
+
+function openLesson(id){if(!byId[id])return;setTab('lesson');state.current=id;renderLesson(id);window.scrollTo(0,0)}
+function downloadText(name,text,type='text/plain'){const blob=new Blob([text],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),800)}
+function exportProgress(){downloadText('az-rl-studio-progress.json',JSON.stringify({schemaVersion:1,completed:[...state.completed],bookmarks:[...state.bookmarks],theme:state.theme,current:state.current,drafts:state.drafts},null,2),'application/json');toast('Progress exported')}
+function importProgressFile(file){
+ if(file.size>2_000_000){toast('Import rejected: file too large');return}
+ const r=new FileReader();
+ r.onload=()=>{try{
+  const d=JSON.parse(r.result);
+  if(!d||d.schemaVersion!==1||!Array.isArray(d.completed)||!Array.isArray(d.bookmarks)||typeof d.drafts!=='object')throw Error('bad schema');
+  if([...d.completed,...d.bookmarks].some(id=>typeof id!=='string'||!byId[id]))throw Error('unknown id');
+  state.completed=new Set(d.completed);
+  state.bookmarks=new Set(d.bookmarks);
+  state.theme=['system','light','dark'].includes(d.theme)?d.theme:'system';
+  state.current=byId[d.current]?d.current:null;
+  state.drafts=Object.fromEntries(Object.entries(d.drafts).filter(([k,v])=>byId[k]&&typeof v==='string'&&v.length<100000));
+  applyTheme();save();renderTree();
+  state.current?openLesson(state.current):renderHome();
+  toast('Progress imported');
+ }catch(e){toast('Import rejected: invalid data')}};
+ r.readAsText(file);
+}
+
+/* ============================================================================
+   SIMPLE LABS (lessons)
+   ========================================================================== */
+function demoMdp(){
+ const gw=GridWorld.make({stepReward:1, goalReward:10, cliffReward:100, slip:0, gamma:0.95});
+ const states=GridWorld.states(gw);
+ return {
+  encoded:`A default 5x5 gridworld MDP:\n  states S = ${states.length} (25 cells, minus 1 wall if you add one)\n  actions A = 4 (up, right, down, left)\n  start     = (0, 0) top-left\n  goal      = (${gw.goal.r}, ${gw.goal.c}) bottom-right\n  step cost = -${gw.stepReward}\n  goal reward = +${gw.goalReward}\n  discount γ = ${gw.gamma}\n\nAn episode ends only when the agent reaches the goal.`,
+  decoded:`The MDP has all five parts: states, actions, transitions, rewards, and a discount factor.\n\nThe policy is a rule that says what to do in each state. In the Gridworld Lab you can watch different algorithms find the best policy.\n\nMarkov property: the next cell and reward depend only on where you are and what you do, not on how you got there.`
+ };
+}
+
+function demoReturns(){
+ const rewards=[10,10,10,10,10,10,10,10];
+ const rows=[];
+ for(const gamma of [0,0.5,0.9,0.99,1.0]){
+  let G=0, discount=1;
+  for(const r of rewards){G+=discount*r;discount*=gamma}
+  const bound=gamma<1?10/(1-gamma):Infinity;
+  rows.push(`γ = ${gamma.toString().padEnd(4)}  G = ${G.toFixed(4).padStart(10)}  bound = ${Number.isFinite(bound)?bound.toFixed(2):'∞'}`);
+ }
+ return {
+  encoded:`rewards stream: ${rewards.join(', ')}\n\n${rows.join('\n')}\n\nFor γ<1 and bounded rewards, the geometric series is finite. For γ=1 in a continuing task, the sum grows without bound.`,
+  decoded:`The return is the total discounted reward from a point onward. The recursive form G_t = R_{t+1} + γ G_{t+1} is what makes the Bellman equation possible: the value of now depends on the value of next.\n\nγ close to 1 means the agent is patient and considers the far future. γ close to 0 means it is short-sighted and only cares about the next reward.`
+ };
+}
+
+function demoValues(){
+ const Q=[3,5,1,4];
+ const uniform=Q.reduce((a,b)=>a+b,0)/Q.length;
+ const greedy=Math.max(...Q);
+ const twoStep=[2,4,6,8];
+ const uniform2=twoStep.reduce((a,b)=>a+b,0)/twoStep.length;
+ return {
+  encoded:`Q-values at state s: [${Q.join(', ')}]\n\nV^π(s) under a uniform policy over 4 actions:\n  V = (3+5+1+4)/4 = ${uniform.toFixed(3)}\n\nV*(s) (greedy):\n  V* = max(3,5,1,4) = ${greedy}\n\nQ-values at another state: [${twoStep.join(', ')}]\nV^π under uniform: ${uniform2.toFixed(3)}`,
+  decoded:`V is the average of Q over the actions the policy might take. The greedy policy always picks the largest Q, so under the greedy policy V equals the max Q.\n\nThe relationship runs both ways:\n  V(s) = Σ_a π(a|s) Q(s,a)\n  Q(s,a) = Σ_{s',r} p(s',r|s,a) [r + γ V(s')]\n\nSubstituting one into the other gives the Bellman equation.`
+ };
+}
+
+function demoBellman(){
+ // one Bellman backup on a tiny 3-state line
+ const gamma=0.9;
+ // state A -> state B with reward +1
+ // state B -> terminal with reward +10
+ // state B is a single transition, so Q(B) = 10
+ const V_terminal=0;
+ const V_B=10+gamma*V_terminal;
+ const V_A=1+gamma*V_B;
+ return {
+  encoded:`Tiny 3-state MDP: A → B → terminal\n  reward A→B = +1\n  reward B→terminal = +10\n  γ = ${gamma}\n\nBellman backup:\n  V(terminal) = 0\n  V(B) = 10 + ${gamma}·0 = ${V_B.toFixed(2)}\n  V(A) = 1 + ${gamma}·${V_B.toFixed(2)} = ${V_A.toFixed(2)}\n\nThe same equation, applied backward from the terminal, gives every value.`,
+  decoded:`This is the Bellman equation in its simplest form. The value of a state equals the immediate reward plus the discounted value of the next state.\n\nIn a stochastic environment, replace each deterministic transition with an expectation over (s', r). In an optimization problem, replace the fixed action with a max over actions.\n\nIterating this backup on every state until the values stop changing is value iteration.`
+ };
+}
+
+function demoDp(){
+ const gw=GridWorld.make({stepReward:1, goalReward:10, cliffReward:100, slip:0, gamma:0.9});
+ const vi=GridWorld.valueIteration(gw,{theta:1e-8,maxIter:500});
+ const pi=GridWorld.policyIteration(gw,{theta:1e-8,maxOuter:50});
+ // compare the two
+ let maxDiff=0;
+ for(let i=0;i<vi.V.length;i++)maxDiff=Math.max(maxDiff,Math.abs(vi.V[i]-pi.V[i]));
+ const line=(label,V)=>{
+  let s=label+':\n';
+  for(let r=0;r<gw.rows;r++){
+   s+='  ';
+   for(let c=0;c<gw.cols;c++){
+    const v=V[GridWorld.idx(gw,r,c)];
+    s+=(v===0&&GridWorld.isGoal(gw,r,c)?'  GOAL':(v.toFixed(2).padStart(6)))+' ';
+   }
+   s+='\n';
+  }
+  return s;
+ };
+ return {
+  encoded:`Gridworld 5x5, no walls, goal at (4,4)\nγ = 0.9, step cost = -1, goal reward = +10\n\nValue iteration (${vi.iters} sweeps):\n${line('V*',vi.V)}\nPolicy iteration (${pi.outer} outer steps):\n${line('V*',pi.V)}\nMaximum difference between the two: ${maxDiff.toExponential(2)}`,
+  decoded:`Both algorithms converge to the same V* because they are solving the same Bellman optimality equation. Value iteration combines evaluation and improvement into one sweep. Policy iteration runs full evaluation between improvements, which usually takes fewer outer steps but each step is more expensive.\n\nThe value of the goal cell is 0 by definition. Every other cell is the expected discounted sum of future rewards.\n\nBecause step rewards are negative, the values are negative and grow closer to zero near the goal.`
+ };
+}
+
+function demoMcTd(){
+ // a 5-state line MDP solved by MC and TD(0)
+ const N=5, TERMINAL=N-1, GAMMA=0.9;
+ const rng=mulberry32(7);
+ function randInt(n){return Math.floor(rng()*n)}
+ function stepLine(s,a){const ns=Math.max(0,Math.min(N-1,s+(a===1?1:-1)));const reward=(ns===TERMINAL&&s!==TERMINAL)?1:0;return {ns,reward,done:ns===TERMINAL}}
+ const V_mc=new Float64Array(N), V_td=new Float64Array(N);
+ const alpha=0.1, episodes=3000;
+ for(let e=0;e<episodes;e++){
+  // MC
+  let s=0;const traj=[];
+  for(let t=0;t<50;t++){const a=randInt(2);const {ns,reward,done}=stepLine(s,a);traj.push([s,reward]);s=ns;if(done)break}
+  let G=0;
+  for(let i=traj.length-1;i>=0;i--){G=traj[i][1]+GAMMA*G;V_mc[traj[i][0]]+=alpha*(G-V_mc[traj[i][0]])}
+  // TD
+  s=0;
+  for(let t=0;t<50;t++){const a=randInt(2);const {ns,reward,done}=stepLine(s,a);const target=reward+GAMMA*(done?0:V_td[ns]);V_td[s]+=alpha*(target-V_td[s]);s=ns;if(done)break}
+ }
+ return {
+  encoded:`5-state line MDP. Terminal on the right (state ${TERMINAL}).\nγ = 0.9, α = 0.1, ${episodes} episodes.\n\nMC (every-visit):\n  ${Array.from(V_mc).map(v=>v.toFixed(3)).join('  ')}\n\nTD(0):\n  ${Array.from(V_td).map(v=>v.toFixed(3)).join('  ')}\n\nBoth should be close to the true values: [0.729, 0.81, 0.9, 1.0, 0]`,
+  decoded:`MC and TD(0) both estimate V, but they use different targets. MC uses the actual return from each state. TD(0) uses the reward plus the next state's estimate.\n\nMC is unbiased but has high variance because the full return includes many random rewards. TD(0) is biased because it bootstraps from V, but has lower variance because it only uses one random reward.\n\nIn long episodes, TD usually learns faster. In short episodes the difference is smaller.`
+ };
+}
+
+function demoSarsaQ(){
+ // run SARSA and Q-learning on a small gridworld and compare the learned policy
+ const gw=GridWorld.make({stepReward:1, goalReward:10, cliffReward:100, slip:0, gamma:0.95});
+ const rng=mulberry32(42);
+ const Q_sarsa=GridWorld.emptyQ(gw);
+ const Q_q=GridWorld.emptyQ(gw);
+ const episodes=3000;
+ const alpha=0.1, epsilon=0.1;
+ const sarsaRewards=[], qRewards=[];
+ for(let e=0;e<episodes;e++){
+  const r1=GridWorld.runEpisode(gw,Q_sarsa,'sarsa',{rng,epsilon,alpha,maxSteps:200});
+  const r2=GridWorld.runEpisode(gw,Q_q,'qlearning',{rng,epsilon,alpha,maxSteps:200});
+  if(e%200===0){sarsaRewards.push(r1.reward);qRewards.push(r2.reward)}
+ }
+ const sarsaEval=GridWorld.greedyEval(gw,Q_sarsa);
+ const qEval=GridWorld.greedyEval(gw,Q_q);
+ const line=(label,Q)=>{
+  let s=label+'\n';
+  for(let r=0;r<gw.rows;r++){
+   s+='  ';
+   for(let c=0;c<gw.cols;c++){
+    if(GridWorld.isWall(gw,r,c)){s+='  #  ';continue}
+    if(GridWorld.isGoal(gw,r,c)){s+='  G  ';continue}
+    const a=GridWorld.greedy(Q,gw,r,c);
+    s+=GridWorld.ARROW[a]+'    ';
+   }
+   s+='\n';
+  }
+  return s;
+ };
+ return {
+  encoded:`Gridworld 5x5, γ=${gw.gamma}, α=${alpha}, ε=${epsilon}, ${episodes} episodes each\n\nSARSA greedy policy (greedy return = ${sarsaEval.reward.toFixed(2)}):\n${line('',Q_sarsa)}\nQ-learning greedy policy (greedy return = ${qEval.reward.toFixed(2)}):\n${line('',Q_q)}\n\nNote: SARSA and Q-learning both learn a policy that reaches the goal. The paths may differ slightly because SARSA accounts for the exploring policy it followed.`,
+  decoded:`Q-learning updates toward the best next action. SARSA updates toward the action actually taken. Both use ε-greedy to choose actions during training.\n\nIn this gridworld the two algorithms usually produce similar greedy policies because there is no cliff. On a cliff-walking variant, Q-learning would learn the shortest path along the cliff edge, while SARSA would learn a safer path because it accounts for the chance of a slip pushing the agent off the edge.\n\nThe greedy return here is the reward collected by following the greedy policy with no exploration and no slip.`
+ };
+}
+
+function demoExplore(){
+ // compare strategies on a simple 5-arm bandit
+ const trueMeans=[0.3,0.1,0.5,0.4,0.2];
+ const rng=mulberry32(7);
+ function run(strategy,steps){
+  const mean=new Float64Array(5), count=new Float64Array(5);
+  let total=0;
+  for(let t=0;t<steps;t++){
+   let a;
+   if(strategy==='eps'){a=rng()<0.1?Math.floor(rng()*5):argmax(mean)}
+   else if(strategy==='opt'){a=argmaxCount(count,mean,rng)}
+   else {a=argmax(mean)}
+   const r=trueMeans[a]+(rng()*2-1)*0.1;
+   total+=r;count[a]++;mean[a]+=(r-mean[a])/count[a];
+  }
+  return total/steps;
+ }
+ function argmax(arr){let bi=0;for(let i=1;i<arr.length;i++)if(arr[i]>arr[bi])bi=i;return bi}
+ function argmaxCount(count,mean,rng){
+  for(let i=0;i<5;i++)if(count[i]===0)return i;
+  let bi=0,bv=-Infinity;
+  for(let i=0;i<5;i++){
+   const v=mean[i]+Math.sqrt(Math.log(1+rng()*1e6)/count[i]);
+   if(v>bv){bv=v;bi=i}
+  }
+  return bi;
+ }
+ const steps=2000;
+ const eps=run('eps',steps);
+ const opt=run('opt',steps);
+ const greedy=run('greedy',steps);
+ return {
+  encoded:`5-armed bandit, true means: [${trueMeans.join(', ')}]\nBest arm mean: ${Math.max(...trueMeans)}\n${steps} steps per strategy\n\nGreedy (always exploit): mean reward ${greedy.toFixed(3)}\nε-greedy (ε=0.1):       mean reward ${eps.toFixed(3)}\nOptimistic init + UCB:  mean reward ${opt.toFixed(3)}\n\nIf exploration is removed entirely, the agent can lock onto a bad arm early.`,
+  decoded:`Greedy exploitation without any exploration can get stuck: if the first few pulls of an arm happen to be lucky, the agent will commit to it and never try the better arm.\n\nε-greedy explores uniformly at random. UCB is smarter: it adds an uncertainty bonus that is large for rarely tried arms.\n\nThe exploration-exploitation tradeoff is the central tension of RL. Too little exploration and you miss better options. Too much and you never act on what you have learned.`
+ };
+}
+
+/* ============================================================================
+   Lab dispatcher
+   ========================================================================== */
+async function runLab(l){
+ const out=$('#labEncoded'),dec=$('#labDecoded');
+ if(!out)return;
+ try{
+  out.textContent='Running…';dec.textContent='';
+  let res;
+  switch(l.demo){
+   case'mdp':res=demoMdp();break;
+   case'returns':res=demoReturns();break;
+   case'values':res=demoValues();break;
+   case'bellman':res=demoBellman();break;
+   case'dp':res=demoDp();break;
+   case'mctd':res=demoMcTd();break;
+   case'sarsaq':res=demoSarsaQ();break;
+   case'explore':res=demoExplore();break;
+   default:throw Error('No interactive implementation for this lesson.');
+  }
+  out.textContent=res.encoded;
+  dec.textContent=res.decoded;
+ }catch(e){
+  out.textContent='Input or runtime error';
+  dec.textContent=e.message;
+ }
+ toast('Lab complete');
+}
+
+/* ============================================================================
+   GRIDWORLD LAB
+   ========================================================================== */
+const GW = {
+ gw:null,
+ algo:'vi',          // 'pe','pi','vi','sarsa','qlearning'
+ Q:null,
+ V:null,
+ policy:null,
+ running:false,
+ stepCount:0,
+ episodeRewards:[],
+ lineCurve:[],
+ rng:null,
+ seed:7,
+ epsilon:0.1,
+ alpha:0.1,
+ speed:1,
+ lastAlgoInfo:'',
+ editMode:'wall',   // 'wall','cliff','empty'
+ init(){
+  this.gw=GridWorld.make({stepReward:1,goalReward:10,cliffReward:100,slip:0,gamma:0.95});
+  // default: a wall in the middle
+  this.gw.walls.add('1,1');
+  this.gw.walls.add('2,1');
+  this.rng=mulberry32(this.seed);
+  this.reset();
+ },
+ reset(){
+  this.rng=mulberry32(this.seed);
+  this.stepCount=0;
+  this.episodeRewards=[];
+  this.lineCurve=[];
+  this.Q=GridWorld.emptyQ(this.gw);
+  this.V=new Float64Array(this.gw.rows*this.gw.cols);
+  this.policy=null;
+  this.running=false;
+  this.lastAlgoInfo='';
+  this.draw();
+  this.updateStats();
+ },
+ clearGrid(){
+  this.gw.walls.clear();
+  this.gw.cliff.clear();
+  this.reset();
+ },
+ setDefaultGrid(){
+  this.gw.walls.clear();
+  this.gw.cliff.clear();
+  this.gw.walls.add('1,1');
+  this.gw.walls.add('2,1');
+  this.reset();
+ },
+ stepOnce(){
+  if(this.algo==='pe'||this.algo==='pi'||this.algo==='vi'){
+   this.runOneSweep();
+  } else {
+   this.runOneEpisode();
+  }
+  this.draw();
+  this.updateStats();
+ },
+ runOneSweep(){
+  const gw=this.gw;
+  if(this.algo==='vi'){
+   const res=GridWorld.valueIteration(gw,{theta:1e-6,maxIter:1});
+   this.V=res.V;this.policy=res.policy;
+   this.stepCount++;
+   this.lastAlgoInfo=`VI sweep ${this.stepCount}`;
+  } else if(this.algo==='pe'){
+   if(!this.policy){
+    this.policy={};
+    for(const [r,c] of GridWorld.states(gw)){
+     if(GridWorld.isTerminal(gw,r,c)){this.policy[r*gw.cols+c]=[0,0,0,0];continue}
+     this.policy[r*gw.cols+c]=[0.25,0.25,0.25,0.25];
+    }
+   }
+   const res=GridWorld.policyEvaluation(gw,this.policy,{theta:1e-6,maxIter:1});
+   this.V=res.V;
+   this.stepCount++;
+   this.lastAlgoInfo=`PE sweep ${this.stepCount}`;
+  } else if(this.algo==='pi'){
+   const res=GridWorld.policyIteration(gw,{theta:1e-8,maxOuter:1});
+   this.V=res.V;this.policy=res.policy;
+   this.stepCount++;
+   this.lastAlgoInfo=`PI outer step ${this.stepCount}`;
+  }
+ },
+ runOneEpisode(){
+  const gw=this.gw;
+  const algo=this.algo;
+  const rng=this.rng;
+  const res=GridWorld.runEpisode(gw,this.Q,algo,{rng,epsilon:this.epsilon,alpha:this.alpha,maxSteps:200});
+  this.stepCount++;
+  this.episodeRewards.push(res.reward);
+  if(this.stepCount%20===0){
+   // record a running average for the curve
+   const recent=this.episodeRewards.slice(-50);
+   const avg=recent.reduce((a,b)=>a+b,0)/recent.length;
+   this.lineCurve.push(avg);
+   if(this.lineCurve.length>200)this.lineCurve.shift();
+  }
+  // recompute V from Q for display
+  for(let r=0;r<gw.rows;r++)for(let c=0;c<gw.cols;c++){
+   if(GridWorld.isWall(gw,r,c))continue;
+   const q=this.Q[r*gw.cols+c];
+   let mx=-Infinity;for(const v of q)if(v>mx)mx=v;
+   this.V[GridWorld.idx(gw,r,c)]=mx;
+  }
+  this.policy=null;
+  this.lastAlgoInfo=`${algo.toUpperCase()} episode ${this.stepCount}`;
+ },
+ runMany(n){
+  for(let i=0;i<n;i++){
+   if(this.algo==='pe'||this.algo==='pi'||this.algo==='vi')this.runOneSweep();
+   else this.runOneEpisode();
+  }
+  this.draw();
+  this.updateStats();
+ },
+ setAlgo(a){
+  this.algo=a;
+  this.reset();
+ },
+ draw(){
+  const cv=$('#gwCanvas');
+  if(!cv)return;
+  const gw=this.gw;
+  const W=cv.width, H=cv.height;
+  const ctx=cv.getContext('2d');
+  const cellW=W/gw.cols, cellH=H/gw.rows;
+  // background
+  ctx.clearRect(0,0,W,H);
+  // color scale for V
+  let vMin=0, vMax=0;
+  for(let i=0;i<this.V.length;i++){
+   const v=this.V[i];
+   if(v<vMin)vMin=v;
+   if(v>vMax)vMax=v;
+  }
+  if(vMax-vMin<1e-6){vMin=-1;vMax=1}
+  for(let r=0;r<gw.rows;r++){
+   for(let c=0;c<gw.cols;c++){
+    const x=c*cellW, y=r*cellH;
+    if(GridWorld.isWall(gw,r,c)){
+     ctx.fillStyle='#1a1a1a';
+     ctx.fillRect(x,y,cellW,cellH);
+     ctx.strokeStyle='#000';ctx.strokeRect(x+0.5,y+0.5,cellW-1,cellH-1);
+     ctx.fillStyle='#888';ctx.font='bold 18px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+     ctx.fillText('#',x+cellW/2,y+cellH/2);
+     continue;
+    }
+    if(GridWorld.isGoal(gw,r,c)){
+     ctx.fillStyle='#3a7d44';ctx.fillRect(x,y,cellW,cellH);
+    } else if(GridWorld.isCliff(gw,r,c)){
+     ctx.fillStyle='#7d3a3a';ctx.fillRect(x,y,cellW,cellH);
+    } else {
+     const v=this.V[GridWorld.idx(gw,r,c)];
+     const t=(v-vMin)/Math.max(1e-9,vMax-vMin);
+     const rC=Math.round(220*(1-t)+220*t*0.4);
+     const gC=Math.round(200*(1-t)+150*t*0.6);
+     const bC=Math.round(170*(1-t)+60*t*0.4);
+     ctx.fillStyle=`rgb(${rC},${gC},${bC})`;
+     ctx.fillRect(x,y,cellW,cellH);
+    }
+    ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.strokeRect(x+0.5,y+0.5,cellW-1,cellH-1);
+    // value text
+    if(!GridWorld.isGoal(gw,r,c)){
+     const v=this.V[GridWorld.idx(gw,r,c)];
+     if(Math.abs(v)>1e-6){
+      ctx.fillStyle='rgba(0,0,0,0.75)';
+      ctx.font='11px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(v.toFixed(1),x+cellW/2,y+cellH/2+6);
+     }
+    }
+    // policy arrow
+    if(this.policy){
+     const p=this.policy[r*gw.cols+c];
+     if(p){
+      let best=0;
+      for(let i=1;i<4;i++)if(p[i]>p[best])best=i;
+      ctx.fillStyle='#1a1005';
+      ctx.font='bold 22px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(GridWorld.ARROW[best],x+cellW/2,y+cellH/2);
+     }
+    } else if(this.algo==='sarsa'||this.algo==='qlearning'){
+     const q=this.Q[r*gw.cols+c];
+     if(q){
+      let best=0;
+      for(let i=1;i<4;i++)if(q[i]>q[best])best=i;
+      ctx.fillStyle='rgba(26,16,5,0.75)';
+      ctx.font='bold 22px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+      ctx.fillText(GridWorld.ARROW[best],x+cellW/2,y+cellH/2);
+     }
+    }
+    // start marker
+    if(r===gw.start.r&&c===gw.start.c){
+     ctx.strokeStyle='#c97a12';ctx.lineWidth=2.5;
+     ctx.strokeRect(x+3,y+3,cellW-6,cellH-6);
+    }
+   }
+  }
+  // Draw learning curve
+  const curve=$('#gwCurve');
+  if(curve){
+   const cctx=curve.getContext('2d');
+   const CW=curve.width, CH=curve.height;
+   cctx.clearRect(0,0,CW,CH);
+   cctx.fillStyle='#faf7f1';cctx.fillRect(0,0,CW,CH);
+   cctx.strokeStyle='rgba(0,0,0,0.15)';cctx.strokeRect(0.5,0.5,CW-1,CH-1);
+   if(this.lineCurve.length>1){
+    let lo=Infinity,hi=-Infinity;
+    for(const v of this.lineCurve){if(v<lo)lo=v;if(v>hi)hi=v}
+    const pad=(hi-lo)*0.1||1;
+    lo-=pad;hi+=pad;
+    cctx.strokeStyle='#a35a06';cctx.lineWidth=1.6;
+    cctx.beginPath();
+    for(let i=0;i<this.lineCurve.length;i++){
+     const x=2+(i/(this.lineCurve.length-1))*(CW-4);
+     const y=CH-2-((this.lineCurve[i]-lo)/(hi-lo))*(CH-4);
+     i?cctx.lineTo(x,y):cctx.moveTo(x,y);
+    }
+    cctx.stroke();
+   } else {
+    cctx.fillStyle='#8b8171';cctx.font='11px monospace';cctx.textAlign='center';cctx.textBaseline='middle';
+    cctx.fillText('learning curve (per-episode return, averaged over 50 episodes)',CW/2,CH/2);
+   }
+  }
+ },
+ updateStats(){
+  const s=$('#gwSteps');if(s)s.textContent=String(this.stepCount);
+  const a=$('#gwAlgo');if(a)a.textContent=this.lastAlgoInfo||'—';
+  let lastReward=0;
+  if(this.episodeRewards.length){
+   const last10=this.episodeRewards.slice(-10);
+   lastReward=last10.reduce((a,b)=>a+b,0)/last10.length;
+  }
+  const r=$('#gwReward');if(r)r.textContent=this.algo.startsWith('q')||this.algo==='sarsa'?lastReward.toFixed(1):'—';
+ },
+ handleClick(ev){
+  const cv=$('#gwCanvas');
+  if(!cv)return;
+  const rect=cv.getBoundingClientRect();
+  const scaleX=cv.width/rect.width;
+  const scaleY=cv.height/rect.height;
+  const px=(ev.clientX-rect.left)*scaleX;
+  const py=(ev.clientY-rect.top)*scaleY;
+  const c=Math.floor(px/(cv.width/this.gw.cols));
+  const r=Math.floor(py/(cv.height/this.gw.rows));
+  if(!GridWorld.inBounds(this.gw,r,c))return;
+  if(r===this.gw.goal.r&&c===this.gw.goal.c)return;
+  if(r===this.gw.start.r&&c===this.gw.start.c)return;
+  const key=r+','+c;
+  if(this.editMode==='wall'){
+   if(this.gw.cliff.has(key))this.gw.cliff.delete(key);
+   else if(this.gw.walls.has(key))this.gw.walls.delete(key);
+   else this.gw.walls.add(key);
+  } else if(this.editMode==='cliff'){
+   if(this.gw.walls.has(key))this.gw.walls.delete(key);
+   else if(this.gw.cliff.has(key))this.gw.cliff.delete(key);
+   else this.gw.cliff.add(key);
+  } else {
+   this.gw.walls.delete(key);this.gw.cliff.delete(key);
+  }
+  this.reset();
+ }
+};
+
+function renderGridworldLab(){
+ const gw=GW.gw||GridWorld.make();
+ const algoNames={pe:'Policy evaluation',pi:'Policy iteration',vi:'Value iteration',sarsa:'SARSA',qlearning:'Q-learning'};
+ $('#mainView').innerHTML=`<div class="breadcrumb">RL Studio / Gridworld Lab</div>
+<header class="header">
+ <div class="eyebrow">GRIDWORLD LAB · LIVE</div>
+ <h1>Solve an MDP by hand.</h1>
+ <p>A 5×5 grid. The start is the top-left. The goal is the bottom-right. Click a cell to toggle a wall or a cliff. Pick an algorithm, watch the value heatmap and the policy arrows update. Everything runs locally.</p>
+</header>
+<section class="panel"><div class="body"><div class="gw-wrap">
+ <div class="gw-canvas-wrap">
+  <canvas id="gwCanvas" width="500" height="500" aria-label="Gridworld with values and policy arrows"></canvas>
+  <canvas id="gwCurve" width="500" height="90" aria-label="Learning curve"></canvas>
+  <div class="legend">
+   <span><i style="background:#f7cd72"></i>state</span>
+   <span><i style="background:#3a7d44"></i>goal</span>
+   <span><i style="background:#7d3a3a"></i>cliff</span>
+   <span><i style="background:#1a1a1a"></i>wall</span>
+   <span>arrows = greedy policy</span>
+   <span>numbers = V(s)</span>
+  </div>
+ </div>
+ <div class="gw-controls">
+  <div class="gw-row">
+   <label for="gwAlgoSelect">Algorithm</label>
+   <select id="gwAlgoSelect">
+    <option value="vi">Value iteration</option>
+    <option value="pi">Policy iteration</option>
+    <option value="pe">Policy evaluation</option>
+    <option value="sarsa">SARSA</option>
+    <option value="qlearning">Q-learning</option>
+   </select>
+  </div>
+  <div class="gw-row">
+   <label for="gwEditMode">Click mode</label>
+   <select id="gwEditMode">
+    <option value="wall">Toggle wall</option>
+    <option value="cliff">Toggle cliff</option>
+    <option value="empty">Clear cell</option>
+   </select>
+  </div>
+  <div class="gw-row">
+   <label for="gwGamma">γ discount</label>
+   <div><input type="range" id="gwGamma" min="0.5" max="0.99" step="0.01" value="${gw.gamma}"><div class="val" id="gwGammaVal">${gw.gamma.toFixed(2)}</div></div>
+  </div>
+  <div class="gw-row">
+   <label for="gwAlpha">α step size</label>
+   <div><input type="range" id="gwAlpha" min="0.01" max="0.5" step="0.01" value="${GW.alpha}"><div class="val" id="gwAlphaVal">${GW.alpha.toFixed(2)}</div></div>
+  </div>
+  <div class="gw-row">
+   <label for="gwEps">ε explore</label>
+   <div><input type="range" id="gwEps" min="0" max="0.5" step="0.01" value="${GW.epsilon}"><div class="val" id="gwEpsVal">${GW.epsilon.toFixed(2)}</div></div>
+  </div>
+  <div class="gw-row">
+   <label for="gwSlip">Slip chance</label>
+   <div><input type="range" id="gwSlip" min="0" max="0.5" step="0.01" value="${gw.slip}"><div class="val" id="gwSlipVal">${gw.slip.toFixed(2)}</div></div>
+  </div>
+  <div class="gw-row">
+   <label for="gwSeed">Seed</label>
+   <input type="number" id="gwSeed" min="1" max="99999" value="${GW.seed}">
+  </div>
+  <div class="stat-row">
+   <div class="stat-tile"><strong id="gwSteps">0</strong><span>sweeps / episodes</span></div>
+   <div class="stat-tile"><strong id="gwReward">—</strong><span>avg return (last 10)</span></div>
+   <div class="stat-tile"><strong id="gwAlgo">—</strong><span>status</span></div>
+  </div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap">
+   <button class="btn primary" id="gwRun100" type="button">Run 100</button>
+   <button class="btn" id="gwStep" type="button">Step</button>
+   <button class="btn" id="gwReset" type="button">Reset</button>
+   <button class="btn" id="gwDefault" type="button">Default grid</button>
+   <button class="btn" id="gwClear" type="button">Clear grid</button>
+  </div>
+  <div class="notice" style="font-size:11px">
+   <strong>What to watch.</strong> With value iteration, the numbers climb toward the goal and the arrows point along the shortest path. With Q-learning or SARSA, the curve rises as the agent learns. Turn the slip chance up and watch the safer path win on a cliff.
+  </div>
+ </div>
+</div></div></section>
+<footer class="footer"><span>Az RL Studio · Gridworld Lab</span><span>All computation runs in your browser; nothing is uploaded.</span></footer>`;
+
+ // wire up
+ $('#gwAlgoSelect').value=GW.algo;
+ $('#gwEditMode').value=GW.editMode;
+ $('#gwAlgoSelect').onchange=e=>{GW.setAlgo(e.target.value);renderGridworldLab()};
+ $('#gwEditMode').onchange=e=>{GW.editMode=e.target.value};
+ $('#gwGamma').oninput=e=>{GW.gw.gamma=parseFloat(e.target.value);$('#gwGammaVal').textContent=GW.gw.gamma.toFixed(2);GW.reset()};
+ $('#gwAlpha').oninput=e=>{GW.alpha=parseFloat(e.target.value);$('#gwAlphaVal').textContent=GW.alpha.toFixed(2)};
+ $('#gwEps').oninput=e=>{GW.epsilon=parseFloat(e.target.value);$('#gwEpsVal').textContent=GW.epsilon.toFixed(2)};
+ $('#gwSlip').oninput=e=>{GW.gw.slip=parseFloat(e.target.value);$('#gwSlipVal').textContent=GW.gw.slip.toFixed(2);GW.reset()};
+ $('#gwSeed').onchange=e=>{GW.seed=Math.max(1,parseInt(e.target.value,10)||1);GW.reset()};
+ $('#gwStep').onclick=()=>GW.stepOnce();
+ $('#gwRun100').onclick=()=>GW.runMany(100);
+ $('#gwReset').onclick=()=>{GW.reset();renderGridworldLab()};
+ $('#gwDefault').onclick=()=>{GW.setDefaultGrid();renderGridworldLab()};
+ $('#gwClear').onclick=()=>{GW.clearGrid();renderGridworldLab()};
+ $('#gwCanvas').onclick=e=>GW.handleClick(e);
+ GW.draw();
+ GW.updateStats();
+}
+
+/* ============================================================================
+   Deep Lab (simplified preview)
+   ========================================================================== */
+function renderDeepLab(){
+ $('#mainView').innerHTML=`<div class="breadcrumb">RL Studio / Deep Lab</div>
+<header class="header">
+ <div class="eyebrow">DEEP LAB · PREVIEW</div>
+ <h1>Function approximation and policy gradients.</h1>
+ <p>A working skeleton of the deep RL machinery: a tiny MLP with hand-written backprop, and a live CartPole-style environment. This tab is a preview of how deep RL scales the tabular ideas. Full DQN and REINFORCE training on CartPole is described in the lessons and the code examples, but the training run itself is the capstone exercise.</p>
+</header>
+<section class="panel"><div class="panel-head"><h2>CartPole environment (live)</h2><p>A simplified 1-D pole. The agent pushes the cart left or right. Run the random policy and watch the pole fall.</p></div><div class="body">
+ <div class="gw-wrap" style="grid-template-columns:minmax(280px,1fr) 320px">
+  <div class="gw-canvas-wrap">
+   <canvas id="cpCanvas" width="480" height="320" aria-label="CartPole environment"></canvas>
+  </div>
+  <div class="gw-controls">
+   <div class="stat-row">
+    <div class="stat-tile"><strong id="cpSteps">0</strong><span>steps balanced</span></div>
+    <div class="stat-tile"><strong id="cpBest">0</strong><span>best run</span></div>
+    <div class="stat-tile"><strong id="cpRuns">0</strong><span>runs</span></div>
+   </div>
+   <div style="display:flex;gap:6px;flex-wrap:wrap">
+    <button class="btn primary" id="cpRun" type="button">Run 1 episode</button>
+    <button class="btn" id="cpStop" type="button">Stop</button>
+    <button class="btn" id="cpReset" type="button">Reset</button>
+   </div>
+   <div class="notice" style="font-size:11px">
+    <strong>What to notice.</strong> Random actions rarely keep the pole up for long. A trained policy would use the four state values (cart position, cart velocity, pole angle, pole angular velocity) to decide. A DQN learns a Q-value for each of the two pushes from these four numbers. REINFORCE learns a probability over the two pushes directly.
+   </div>
+  </div>
+ </div>
+</div></section>
+<section class="panel"><div class="panel-head"><h2>How the deep algorithms work</h2></div><div class="body two">
+ <div class="mini"><h3>DQN</h3><p>A neural network takes the state as input and outputs a Q-value for each action. Replay buffer + target network stabilize learning. Target: y = r + γ · max_{a'} Q(s', a'; θ⁻). Loss: (y − Q(s, a; θ))².</p></div>
+ <div class="mini"><h3>REINFORCE</h3><p>A neural network takes the state and outputs a probability distribution over actions. Collect an episode, compute the return-to-go for each step, then update: θ ← θ + α Σ_t G_t ∇_θ log π_θ(a_t | s_t). A baseline reduces variance.</p></div>
+</div></section>
+<footer class="footer"><span>Az RL Studio · Deep Lab</span><span>All computation runs in your browser; nothing is uploaded.</span></footer>`;
+
+ const cp=CartPoleLab;
+ cp.init();
+ $('#cpRun').onclick=()=>cp.startEpisode();
+ $('#cpStop').onclick=()=>cp.stop();
+ $('#cpReset').onclick=()=>{cp.reset();cp.draw();cp.updateStats()};
+ cp.draw();
+ cp.updateStats();
+}
+
+/* Simple CartPole-ish simulation. Uses a linearized pole model. */
+const CartPoleLab={
+ state:null,
+ best:0,
+ runs:0,
+ running:false,
+ raf:0,
+ init(){
+  this.reset();
+ },
+ reset(){
+  this.state={
+   x:0, vx:0, theta:0.05, vtheta:0,
+   steps:0, done:false
+  };
+  this.running=false;
+  cancelAnimationFrame(this.raf);
+ },
+ physics(action){
+  const s=this.state;
+  const g=9.8, mp=0.1, mc=1.0, l=0.5;
+  const force=action===0?-10:10;
+  const total=mc+mp;
+  const cos=Math.cos(s.theta), sin=Math.sin(s.theta);
+  const temp=(force+mp*l*s.vtheta*s.vtheta*sin)/total;
+  const thetaAcc=(g*sin - cos*temp)/(l*(4/3 - mp*cos*cos/total));
+  const xAcc=temp - mp*l*thetaAcc*cos/total;
+  s.x+=s.vx*0.02;
+  s.vx+=xAcc*0.02;
+  s.theta+=s.vtheta*0.02;
+  s.vtheta+=thetaAcc*0.02;
+  s.steps++;
+  if(Math.abs(s.x)>2.4 || Math.abs(s.theta)>0.2095 || s.steps>=500){
+   s.done=true;
+  }
+ },
+ startEpisode(){
+  if(this.running)return;
+  this.reset();
+  this.running=true;
+  const loop=()=>{
+   if(!this.running)return;
+   if(this.state.done){
+    this.runs++;
+    if(this.state.steps>this.best)this.best=this.state.steps;
+    this.running=false;
+    this.updateStats();
+    return;
+   }
+   // random policy
+   const a=Math.random()<0.5?0:1;
+   this.physics(a);
+   this.draw();
+   this.updateStats();
+   this.raf=requestAnimationFrame(loop);
+  };
+  this.raf=requestAnimationFrame(loop);
+ },
+ stop(){this.running=false;cancelAnimationFrame(this.raf)},
+ updateStats(){
+  const s=$('#cpSteps');if(s)s.textContent=String(this.state.steps);
+  const b=$('#cpBest');if(b)b.textContent=String(this.best);
+  const r=$('#cpRuns');if(r)r.textContent=String(this.runs);
+ },
+ draw(){
+  const cv=$('#cpCanvas');
+  if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.fillStyle='#faf7f1';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#e2dbcc';ctx.strokeRect(0.5,0.5,W-1,H-1);
+  // ground line
+  ctx.strokeStyle='#cec5b2';ctx.lineWidth=1.5;
+  ctx.beginPath();
+  ctx.moveTo(20,H-50);ctx.lineTo(W-20,H-50);
+  ctx.stroke();
+  // cart position mapped
+  const cx=W/2 + (this.state.x/2.4)*(W/2-60);
+  const cy=H-65;
+  // draw cart
+  ctx.fillStyle='#a35a06';
+  ctx.fillRect(cx-40,cy-20,80,30);
+  // draw pole
+  const px=cx;
+  const py=cy-20;
+  const len=90;
+  const ex=px+len*Math.sin(this.state.theta);
+  const ey=py-len*Math.cos(this.state.theta);
+  ctx.strokeStyle='#2a2620';ctx.lineWidth=5;
+  ctx.beginPath();
+  ctx.moveTo(px,py);ctx.lineTo(ex,ey);
+  ctx.stroke();
+  // hub
+  ctx.fillStyle='#7a3f00';
+  ctx.beginPath();ctx.arc(px,py,6,0,Math.PI*2);ctx.fill();
+  // angle text
+  ctx.fillStyle='#655c4e';ctx.font='12px monospace';ctx.textAlign='left';ctx.textBaseline='top';
+  ctx.fillText('theta = '+this.state.theta.toFixed(3)+' rad',20,20);
+  ctx.fillText('x = '+this.state.x.toFixed(2),20,38);
+  ctx.fillText('steps = '+this.state.steps,20,56);
+ }
+};
+
+/* ============================================================================
+   Cheat sheet
+   ========================================================================== */
+function renderCheatSheet(){
+ return `<div class="breadcrumb">RL Studio / Cheat sheet</div>
+<header class="header">
+ <div class="eyebrow">CHEAT SHEET</div>
+ <h1>Every equation, every rule, one screen.</h1>
+ <p>Print this tab. Every formula is from the rigor core. No number is invented.</p>
+</header>
+
+<section class="panel"><div class="panel-head"><h2>Notation</h2></div><div class="body"><div class="table-wrap"><table>
+ <thead><tr><th>Symbol</th><th>Meaning</th></tr></thead>
+ <tbody>
+  <tr><td class="mono">S_t, A_t, R_{t+1}</td><td>state, action, reward after A_t (Sutton &amp; Barto convention)</td></tr>
+  <tr><td class="mono">p(s',r | s,a)</td><td>environment dynamics (the model)</td></tr>
+  <tr><td class="mono">π(a | s)</td><td>policy</td></tr>
+  <tr><td class="mono">G_t = Σ γ^k R_{t+k+1}</td><td>return; also G_t = R_{t+1} + γ G_{t+1}</td></tr>
+  <tr><td class="mono">V^π, Q^π, V*, Q*</td><td>value functions</td></tr>
+  <tr><td class="mono">α, γ, ε</td><td>step size, discount, exploration rate</td></tr>
+  <tr><td class="mono">δ_t</td><td>temporal-difference error</td></tr>
+ </tbody>
+</table></div></div></section>
+
+<section class="panel"><div class="panel-head"><h2>Core equations</h2></div><div class="body">
+ <pre class="pseudo">Return:
+  G_t = Σ_{k=0}^{∞} γ^k R_{t+k+1} = R_{t+1} + γ G_{t+1}
+
+Value functions:
+  V^π(s) = E_π[G_t | S_t = s]
+  Q^π(s,a) = E_π[G_t | S_t = s, A_t = a]
+  V^π(s) = Σ_a π(a|s) Q^π(s,a)
+
+Bellman expectation:
+  V^π(s) = Σ_a π(a|s) Σ_{s',r} p(s',r|s,a) [r + γ V^π(s')]
+  Q^π(s,a) = Σ_{s',r} p(s',r|s,a) [r + γ Σ_{a'} π(a'|s') Q^π(s',a')]
+
+Bellman optimality:
+  V*(s) = max_a Σ_{s',r} p(s',r|s,a) [r + γ V*(s')]
+  Q*(s,a) = Σ_{s',r} p(s',r|s,a) [r + γ max_{a'} Q*(s',a')]
+
+TD error (with terminal handling):
+  δ_t = R_{t+1} + γ (1 - done) max_{a'} Q(S_{t+1}, a') - Q(S_t, A_t)
+
+Q-learning (off-policy):
+  Q(S,A) ← Q(S,A) + α δ_t
+
+SARSA (on-policy):
+  Q(S,A) ← Q(S,A) + α [ R_{t+1} + γ (1 - done) Q(S',A') - Q(S,A) ]
+  where A' is the action actually taken
+
+Policy gradient (REINFORCE, episodic):
+  ∇_θ J = E_π[ Σ_t ∇_θ log π_θ(A_t | S_t) · (G_t - b(S_t)) ]
+
+Baseline unbiasedness:
+  E[ ∇_θ log π_θ(a|s) · b(s) ] = b(s) ∇_θ Σ_a π_θ(a|s) = 0
+
+Log-derivative trick:
+  ∇_θ π_θ(a|s) = π_θ(a|s) · ∇_θ log π_θ(a|s)</pre>
+</div></section>
+
+<section class="panel"><div class="panel-head"><h2>Algorithm classification</h2></div><div class="body"><div class="table-wrap"><table>
+ <thead><tr><th>Algorithm</th><th>Model?</th><th>On/Off</th><th>Predict/Control</th><th>Table?</th></tr></thead>
+ <tbody>
+  <tr><td>Policy evaluation</td><td>model-based</td><td>—</td><td>prediction</td><td>table</td></tr>
+  <tr><td>Policy iteration</td><td>model-based</td><td>—</td><td>control</td><td>table</td></tr>
+  <tr><td>Value iteration</td><td>model-based</td><td>—</td><td>control</td><td>table</td></tr>
+  <tr><td>MC prediction</td><td>model-free</td><td>on</td><td>prediction</td><td>table</td></tr>
+  <tr><td>TD(0)</td><td>model-free</td><td>on</td><td>prediction</td><td>table</td></tr>
+  <tr><td>SARSA</td><td>model-free</td><td>on</td><td>control</td><td>table</td></tr>
+  <tr><td>Q-learning</td><td>model-free</td><td>off</td><td>control</td><td>table</td></tr>
+  <tr><td>DQN</td><td>model-free</td><td>off</td><td>control</td><td>network</td></tr>
+  <tr><td>REINFORCE</td><td>model-free</td><td>on</td><td>control</td><td>network</td></tr>
+ </tbody>
+</table></div></div></section>
+
+<section class="panel"><div class="panel-head"><h2>Failure modes</h2></div><div class="body"><div class="table-wrap"><table>
+ <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+ <tbody>
+  <tr><td>Unstable DQN loss</td><td>Correlated samples</td><td>Replay buffer</td></tr>
+  <tr><td>Q-targets oscillate</td><td>Moving target</td><td>Target network</td></tr>
+  <tr><td>Inflated Q-values</td><td>Max over same estimate</td><td>Double DQN</td></tr>
+  <tr><td>Divergence</td><td>Deadly triad</td><td>Target net, smaller α, replay</td></tr>
+  <tr><td>REINFORCE high variance</td><td>No baseline</td><td>Reward-to-go, baseline, normalization</td></tr>
+  <tr><td>Never finds reward</td><td>Sparse reward, weak exploration</td><td>Optimistic init, ε schedule, shaping</td></tr>
+  <tr><td>Looks learned but fails new seeds</td><td>Single-seed evaluation</td><td>≥5 seeds, report mean ± std</td></tr>
+ </tbody>
+</table></div></div></section>
+
+<section class="panel"><div class="panel-head"><h2>Exit gate (all six, unaided)</h2></div><div class="body"><ol class="steps">
+ <li>Write the Bellman optimality equation for Q* from memory and explain every term.</li>
+ <li>Hand-update a Q-table for 3 steps with α=0.1, γ=0.9.</li>
+ <li>Explain mathematically why Q-learning learns Q* while following an exploratory policy, and why SARSA learns Q^π of the ε-greedy policy.</li>
+ <li>Derive the log-derivative trick and baseline unbiasedness.</li>
+ <li>Code tabular Q-learning that solves non-slippery FrozenLake.</li>
+ <li>Train DQN and REINFORCE on CartPole from scratch and report mean ± std over ≥5 seeds.</li>
+</ol></div></section>
+
+<section class="panel"><div class="panel-head"><h2>Self-test</h2><p>Checks the tabular engine on a small gridworld.</p></div><div class="body">
+ <div style="display:flex;gap:7px;margin-bottom:11px">
+  <button class="btn primary" id="runSelfTest" type="button">Run self-test</button>
+  <span class="muted" style="font-size:11px;align-self:center" id="selfTestSummary"></span>
+ </div>
+ <div id="selfTestOut" class="lab-output">Press the button to run the checks.</div>
+</div></section>
+
+<footer class="footer"><span>Az RL Studio · cheat sheet</span><span>All computation runs in your browser; nothing is uploaded.</span></footer>`;
+}
+
+function runSelfTest(){
+ const out=$('#selfTestOut'),sum=$('#selfTestSummary');
+ if(!out)return;
+ const lines=[];
+ let allPass=true;
+ // test 1: VI and PI agree
+ const gw1=GridWorld.make({stepReward:1,goalReward:10,cliffReward:100,slip:0,gamma:0.9});
+ const vi=GridWorld.valueIteration(gw1,{theta:1e-9,maxIter:2000});
+ const pi=GridWorld.policyIteration(gw1,{theta:1e-9,maxOuter:100});
+ let maxDiff=0;
+ for(let i=0;i<vi.V.length;i++)maxDiff=Math.max(maxDiff,Math.abs(vi.V[i]-pi.V[i]));
+ const t1=maxDiff<1e-6;
+ if(!t1)allPass=false;
+ lines.push(`[${t1?'PASS':'FAIL'}] VI and PI agree to 1e-6  (max diff = ${maxDiff.toExponential(2)})`);
+ // test 2: Q-learning approaches the DP-computed Q*
+ const gw2=GridWorld.make({stepReward:1,goalReward:10,cliffReward:100,slip:0,gamma:0.9});
+ const dpRes=GridWorld.valueIteration(gw2,{theta:1e-9,maxIter:2000});
+ const Qstar={};
+ for(const [r,c] of GridWorld.states(gw2)){
+  Qstar[r*gw2.cols+c]=new Float64Array(4);
+  for(const a of GridWorld.ACTIONS){
+   const possible=GridWorld.possibleTransitions(gw2,r,c,a);
+   let q=0;
+   for(const t of possible)q+=t.prob*(t.reward+gw2.gamma*dpRes.V[GridWorld.idx(gw2,t.r,t.c)]);
+   Qstar[r*gw2.cols+c][a]=q;
+  }
+ }
+ const rng=mulberry32(1);
+ const Q=GridWorld.emptyQ(gw2);
+ for(let e=0;e<8000;e++){
+  GridWorld.runEpisode(gw2,Q,'qlearning',{rng,epsilon:0.1,alpha:0.1,maxSteps:200});
+ }
+ let maxQDiff=0;
+ for(const key in Qstar){
+  for(let a=0;a<4;a++){
+   maxQDiff=Math.max(maxQDiff,Math.abs(Q[key][a]-Qstar[key][a]));
+  }
+ }
+ const t2=maxQDiff<1.0;
+ if(!t2)allPass=false;
+ lines.push(`[${t2?'PASS':'FAIL'}] Q-learning approaches DP Q*  (max diff = ${maxQDiff.toFixed(3)})`);
+ // test 3: Bellman equation holds for the DP solution
+ let maxResidual=0;
+ for(const [r,c] of GridWorld.states(gw2)){
+  if(GridWorld.isTerminal(gw2,r,c))continue;
+  const v=dpRes.V[GridWorld.idx(gw2,r,c)];
+  let best=-Infinity;
+  for(const a of GridWorld.ACTIONS){
+   const possible=GridWorld.possibleTransitions(gw2,r,c,a);
+   let q=0;
+   for(const t of possible)q+=t.prob*(t.reward+gw2.gamma*dpRes.V[GridWorld.idx(gw2,t.r,t.c)]);
+   if(q>best)best=q;
+  }
+  maxResidual=Math.max(maxResidual,Math.abs(v-best));
+ }
+ const t3=maxResidual<1e-6;
+ if(!t3)allPass=false;
+ lines.push(`[${t3?'PASS':'FAIL'}] Bellman residual at the VI fixed point  (max = ${maxResidual.toExponential(2)})`);
+ out.textContent=lines.join('\n');
+ if(sum)sum.textContent=(allPass?'all checks passed':'some checks failed');
+ if(sum)sum.style.color=allPass?'var(--good)':'var(--bad)';
+}
+
+/* ============================================================================
+   Tab switching and shell
+   ========================================================================== */
+function setTab(t){
+ state.tab=t;save();
+ $$('.tab').forEach(x=>x.setAttribute('aria-selected',String(x.dataset.tab===t)));
+ if(t==='lesson'){
+  if(state.page==='progress')renderProgressPage();
+  else if(state.current&&byId[state.current])renderLesson(state.current);
+  else renderHome();
+ } else if(t==='gridworld'){
+  renderGridworldLab();
+ } else if(t==='deeplab'){
+  renderDeepLab();
+ } else if(t==='cheatsheet'){
+  $('#mainView').innerHTML=renderCheatSheet();
+  const b=$('#runSelfTest');if(b)b.onclick=runSelfTest;
+ }
+ renderTree();
+}
+
+function bindShell(){
+ $('#themeSelect').onchange=()=>{state.theme=$('#themeSelect').value;applyTheme();save()};
+ $('#printBtn').onclick=()=>print();
+ $('#exportBtn').onclick=exportProgress;
+ $('#importBtn').onclick=()=>$('#importFile').click();
+ $('#importFile').onchange=e=>{if(e.target.files[0])importProgressFile(e.target.files[0]);e.target.value=''};
+ $('#searchInput').oninput=renderTree;
+ $('#chapterFilter').onchange=renderTree;
+ $('#homeLink').onclick=e=>{e.preventDefault();state.page='home';setTab('lesson');history.replaceState(null,'','#home')};
+ $('#courseTree').onclick=e=>{const b=e.target.closest('[data-lesson]');if(b)openLesson(b.dataset.lesson)};
+ $$('.tab').forEach(t=>t.onclick=()=>setTab(t.dataset.tab));
+ document.querySelectorAll('[data-page="home"]').forEach(b=>b.onclick=()=>{state.page='home';setTab('lesson')});
+ document.querySelectorAll('[data-page="progress"]').forEach(b=>b.onclick=()=>{state.page='progress';setTab('lesson')});
+ document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){e.preventDefault();$('#searchInput').focus()}
+  if(e.key.toLowerCase()==='t'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)){
+   state.theme=state.theme==='dark'?'light':state.theme==='light'?'system':'dark';
+   applyTheme();save();
+  }
+ });
+}
+
+function init(){
+ load();
+ applyTheme();
+ CHAPTERS.forEach(c=>{const op=document.createElement('option');op.value=c.id;op.textContent=c.title;$('#chapterFilter').append(op)});
+ bindShell();
+ GW.init();
+ renderTree();
+ const hash=location.hash.replace(/^#/,'');
+ if(state.tab==='gridworld')setTab('gridworld');
+ else if(state.tab==='deeplab')setTab('deeplab');
+ else if(state.tab==='cheatsheet')setTab('cheatsheet');
+ else if(hash&&byId[hash]){state.current=hash;renderLesson(hash);state.tab='lesson'}
+ else if(state.current&&byId[state.current]){renderLesson(state.current);state.tab='lesson'}
+ else {renderHome();state.tab='lesson'}
+ progress();
+}
+init();
+</script></body></html>
